@@ -27,8 +27,7 @@ public class CadastroCidadeService {
 		Optional<Estado> estadoOptional = estadoRepository.findById(estadoId);
 
 		if (estadoOptional.isEmpty()) {
-			throw new EntidadeNaoEncontradaException(
-					String.format("Não existe cadastro de estado com código %d", estadoId));
+			throw new EntidadeNaoEncontradaException(String.format("Não existe cadastro de estado com código %d", estadoId));
 		}
 
 		cidade.setEstado(estadoOptional.get());
@@ -42,15 +41,13 @@ public class CadastroCidadeService {
 			Optional<Cidade> cidadeOptional = cidadeRepository.findById(cidadeId);
 
 			if (cidadeOptional.isEmpty()) {
-				throw new EntidadeNaoEncontradaException(
-						String.format("Não existe um cadastro de cidade com código %d", cidadeId));
+				throw new EntidadeNaoEncontradaException(String.format("Não existe um cadastro de cidade com código %d", cidadeId));
 			}
 
 			cidadeRepository.delete(cidadeOptional.get());
 
 		} catch (DataIntegrityViolationException e) {
-			throw new EntidadeEmUsoException(
-					String.format("Cidade de código %d não pode ser removida, pois está em uso", cidadeId));
+			throw new EntidadeEmUsoException(String.format("Cidade de código %d não pode ser removida, pois está em uso", cidadeId));
 		}
 
 	}
