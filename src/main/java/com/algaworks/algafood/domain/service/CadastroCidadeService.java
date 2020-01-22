@@ -1,7 +1,5 @@
 package com.algaworks.algafood.domain.service;
 
-import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
@@ -24,13 +22,12 @@ public class CadastroCidadeService {
 
 	public Cidade salvar(Cidade cidade) {
 		Long estadoId = cidade.getEstado().getId();
-		Optional<Estado> estadoOptional = estadoRepository.findById(estadoId);
+		
+		Estado estado = estadoRepository.findById(estadoId)
+				.orElseThrow(() -> new EntidadeNaoEncontradaException(
+						String.format("Não existe cadastro de estado com código %d", estadoId)));
 
-		if (estadoOptional.isEmpty()) {
-			throw new EntidadeNaoEncontradaException(String.format("Não existe cadastro de estado com código %d", estadoId));
-		}
-
-		cidade.setEstado(estadoOptional.get());
+		cidade.setEstado(estado);
 
 		return cidadeRepository.save(cidade);
 	}
@@ -38,13 +35,11 @@ public class CadastroCidadeService {
 	public void excluir(Long cidadeId) {
 		try {
 
-			Optional<Cidade> cidadeOptional = cidadeRepository.findById(cidadeId);
+			Cidade cidade = cidadeRepository.findById(cidadeId)
+					.orElseThrow(() -> new EntidadeNaoEncontradaException(
+							String.format("Não existe um cadastro de cidade com código %d", cidadeId)));
 
-			if (cidadeOptional.isEmpty()) {
-				throw new EntidadeNaoEncontradaException(String.format("Não existe um cadastro de cidade com código %d", cidadeId));
-			}
-
-			cidadeRepository.delete(cidadeOptional.get());
+			cidadeRepository.delete(cidade);
 
 		} catch (DataIntegrityViolationException e) {
 			throw new EntidadeEmUsoException(String.format("Cidade de código %d não pode ser removida, pois está em uso", cidadeId));

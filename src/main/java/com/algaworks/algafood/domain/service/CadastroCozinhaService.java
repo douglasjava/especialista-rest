@@ -1,7 +1,5 @@
 package com.algaworks.algafood.domain.service;
 
-import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
@@ -24,13 +22,10 @@ public class CadastroCozinhaService {
 	public void excluir(Long cozinhaId) {
 		try {
 
-			Optional<Cozinha> cozinhaOptional = cozinhaRepository.findById(cozinhaId);
+			Cozinha cozinha = cozinhaRepository.findById(cozinhaId)
+					.orElseThrow(() -> new EntidadeNaoEncontradaException(
+							String.format("Não existe um cadastro de cozinha com código %d", cozinhaId)));
 
-			if (!cozinhaOptional.isPresent()) {
-				throw new EntidadeNaoEncontradaException(String.format("Não existe um cadastro de cozinha com código %d", cozinhaId));
-			}
-
-			Cozinha cozinha = cozinhaOptional.get();
 			cozinhaRepository.delete(cozinha);
 
 		} catch (DataIntegrityViolationException e) {

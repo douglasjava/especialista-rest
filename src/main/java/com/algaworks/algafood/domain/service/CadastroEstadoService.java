@@ -1,7 +1,5 @@
 package com.algaworks.algafood.domain.service;
 
-import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
@@ -24,14 +22,10 @@ public class CadastroEstadoService {
 	public void excluir(Long estadoId) {
 		try {
 
-			Optional<Estado> estadoOptional = estadoRepository.findById(estadoId);
+			Estado estado = estadoRepository.findById(estadoId)
+					.orElseThrow(() -> new EntidadeNaoEncontradaException(
+							String.format("Não existe um cadastro de estado com código %d", estadoId)));
 
-			if (!estadoOptional.isPresent()) {
-				throw new EntidadeNaoEncontradaException(
-						String.format("Não existe um cadastro de estado com código %d", estadoId));
-			}
-
-			Estado estado = estadoOptional.get();
 			estadoRepository.delete(estado);
 
 		} catch (DataIntegrityViolationException e) {

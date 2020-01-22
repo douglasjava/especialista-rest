@@ -1,7 +1,5 @@
 package com.algaworks.algafood.domain.service;
 
-import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
@@ -21,36 +19,32 @@ public class CadastroRestauranteService {
 
 	@Autowired
 	private CozinhaRepository cozinhaRepository;
-	
-	public Restaurante salvar(Restaurante restaurante) {		
+
+	public Restaurante salvar(Restaurante restaurante) {
 		Long cozinhaId = restaurante.getCozinha().getId();
-		Optional<Cozinha> cozinhaOpt = cozinhaRepository.findById(cozinhaId);
-		
-		if(!cozinhaOpt.isPresent()) {
-			throw new EntidadeNaoEncontradaException(String.format("Não existe cadastro de cozinha com código %d", cozinhaId));
-		}
-		
-		restaurante.setCozinha(cozinhaOpt.get());
-		
+
+		Cozinha cozinha = cozinhaRepository.findById(cozinhaId)
+				.orElseThrow(() -> new EntidadeNaoEncontradaException(
+						String.format("Não existe cadastro de cozinha com código %d", cozinhaId)));
+
+		restaurante.setCozinha(cozinha);
+
 		return restauranteRepository.save(restaurante);
 	}
 
 	public void excluir(Long cidadeId) {
 		try {
 
-			Optional<Restaurante> restauranteOptional = restauranteRepository.findById(cidadeId);
+			Restaurante restaurante = restauranteRepository.findById(cidadeId)
+					.orElseThrow(() -> new EntidadeNaoEncontradaException(
+							String.format("Não existe um cadastro de restaurante com código %d", cidadeId)));
 
-			if (restauranteOptional.isEmpty()) {
-				throw new EntidadeNaoEncontradaException(String.format("Não existe um cadastro de restaurante com código %d", cidadeId));
-			}
-
-			restauranteRepository.delete(restauranteOptional.get());
+			restauranteRepository.delete(restaurante);
 
 		} catch (DataIntegrityViolationException e) {
 			throw new EntidadeEmUsoException(String.format("Restaurante de código %d não pode ser removida, pois está em uso", cidadeId));
 		}
 
 	}
-	
 
 }
