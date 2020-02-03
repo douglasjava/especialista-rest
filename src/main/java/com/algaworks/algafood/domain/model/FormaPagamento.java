@@ -1,5 +1,7 @@
 package com.algaworks.algafood.domain.model;
 
+import java.io.Serializable;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -17,7 +19,9 @@ import lombok.EqualsAndHashCode;
 @Entity
 @DynamicInsert
 @DynamicUpdate
-public class FormaPagamento {
+public class FormaPagamento  implements Serializable {
+
+	private static final long serialVersionUID = 1L;
 
 	@EqualsAndHashCode.Include
 	@Id

@@ -1,15 +1,15 @@
 package com.algaworks.algafood.domain.model;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-
-import org.hibernate.annotations.DynamicInsert;
-import org.hibernate.annotations.DynamicUpdate;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -17,9 +17,7 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Entity
-@DynamicInsert
-@DynamicUpdate
-public class Permissao implements Serializable {
+public class Produto implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
@@ -33,5 +31,15 @@ public class Permissao implements Serializable {
 
 	@Column(nullable = false)
 	private String descricao;
+
+	@Column(nullable = false)
+	private BigDecimal preco;
+
+	@Column(nullable = false)
+	private Boolean ativo;
+
+	@ManyToOne
+	@JoinColumn(nullable = false)
+	private Restaurante restaurante;
 
 }
