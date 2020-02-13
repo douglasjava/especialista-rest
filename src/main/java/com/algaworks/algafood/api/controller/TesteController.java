@@ -2,11 +2,15 @@ package com.algaworks.algafood.api.controller;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.algaworks.algafood.domain.model.Cozinha;
@@ -79,10 +83,18 @@ public class TesteController {
 	public Optional<Restaurante> restaurantePrimeiro() {
 		return restauranteRepository.buscarPrimeiro();
 	}
-	
+
 	@GetMapping("/cozinhas/primeira")
 	public Optional<Cozinha> cozinhaPrimeiro() {
 		return cozinhaRepository.buscarPrimeiro();
+	}
+
+	@PostMapping(value = "/authenticate", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+	public String testeRest(@RequestParam Map<String, String> body) {
+		if (body.get("user") != null) {
+			return body.get("user");
+		}
+		return "";
 	}
 
 }
