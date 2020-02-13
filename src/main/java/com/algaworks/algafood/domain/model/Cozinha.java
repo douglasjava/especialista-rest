@@ -1,5 +1,6 @@
 package com.algaworks.algafood.domain.model;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,8 +26,10 @@ import lombok.EqualsAndHashCode;
 @Entity
 @DynamicInsert
 @DynamicUpdate
-public class Cozinha {
+public class Cozinha  implements Serializable {
 
+	private static final long serialVersionUID = 1L;
+	
 	@EqualsAndHashCode.Include
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
