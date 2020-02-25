@@ -32,6 +32,6 @@ Import as *Existing Maven Project* and run it as *Spring Boot App*.
 - Class service not return ResponseEntity, not know protocol HTTP
 - 400 "Bad Request" status used when information of user there are incorrect
 - 404 "Not Found" status used when an recurse not exist example = endpoint /restaurantes not exist
-
+- Commando for flyway: mvn flyway:repair -Dflyway.configFiles=src/main/resources/flyway.properties
 
 
