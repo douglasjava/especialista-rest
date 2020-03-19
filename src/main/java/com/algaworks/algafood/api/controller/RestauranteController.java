@@ -3,6 +3,8 @@ package com.algaworks.algafood.api.controller;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -75,11 +77,11 @@ public class RestauranteController {
 	}
 
 	@PatchMapping("/{restauranteId}")
-	public Restaurante atualizarParcial(@PathVariable Long restauranteId, @RequestBody Map<String, Object> campos) {
+	public Restaurante atualizarParcial(@PathVariable Long restauranteId, @RequestBody Map<String, Object> campos, HttpServletRequest request) {
 
 		Restaurante restauranteAtual = cadastroRestaurante.buscarOuFalhar(restauranteId);
 
-		payloadMerger.merge(campos, restauranteAtual, Restaurante.class);
+		payloadMerger.merge(campos, restauranteAtual, request, Restaurante.class);
 
 		return atualizar(restauranteId, restauranteAtual);
 

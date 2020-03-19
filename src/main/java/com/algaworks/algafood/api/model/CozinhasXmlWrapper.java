@@ -1,5 +1,5 @@
 package com.algaworks.algafood.api.model;
-
+/*
 import java.util.List;
 
 import com.algaworks.algafood.domain.model.Cozinha;
@@ -20,3 +20,4 @@ public class CozinhasXmlWrapper {
 	private List<Cozinha> cozinhas;
 
 }
+*/
