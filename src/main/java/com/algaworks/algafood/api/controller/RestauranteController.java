@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.algaworks.algafood.domain.exception.CozinhaNaoEncontradaException;
 import com.algaworks.algafood.domain.exception.NegocioException;
 import com.algaworks.algafood.domain.helper.PayloadMerger;
+import com.algaworks.algafood.domain.helper.ValidateProgramatic;
 import com.algaworks.algafood.domain.model.Cidade;
 import com.algaworks.algafood.domain.model.Restaurante;
 import com.algaworks.algafood.domain.repository.RestauranteRepository;
@@ -41,6 +42,9 @@ public class RestauranteController {
 
 	@Autowired
 	private PayloadMerger payloadMerger;
+	
+	@Autowired
+	private ValidateProgramatic validateProgramatic;
 
 	@GetMapping
 	public List<Restaurante> listar() {
@@ -81,8 +85,10 @@ public class RestauranteController {
 	public Restaurante atualizarParcial(@PathVariable Long restauranteId, @RequestBody Map<String, Object> campos, HttpServletRequest request) {
 
 		Restaurante restauranteAtual = cadastroRestaurante.buscarOuFalhar(restauranteId);
-
+		
 		payloadMerger.merge(campos, restauranteAtual, request, Restaurante.class);
+		
+		validateProgramatic.validate(restauranteAtual, "restaurante");
 
 		return atualizar(restauranteId, restauranteAtual);
 
