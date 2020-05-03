@@ -7,6 +7,7 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -87,6 +88,12 @@ public class TesteController {
 	@GetMapping("/cozinhas/primeira")
 	public Optional<Cozinha> cozinhaPrimeiro() {
 		return cozinhaRepository.buscarPrimeiro();
+	}
+	
+	@GetMapping(value = "/processamento", produces = { "application/json" })
+	public ResponseEntity<?> getFilas(@RequestParam String page) {
+		System.out.println(page);
+		return ResponseEntity.ok().build();
 	}
 
 	@PostMapping(value = "/authenticate", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)

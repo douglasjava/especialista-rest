@@ -6,7 +6,6 @@ import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.SmartValidator;
 
 import com.algaworks.algafood.domain.exception.ValidacaoException;
-import com.algaworks.algafood.domain.model.Restaurante;
 
 @Component
 public class ValidateProgramatic {
@@ -14,9 +13,9 @@ public class ValidateProgramatic {
 	@Autowired
 	private SmartValidator validator;
 
-	public void validate(Restaurante object, String objectName) {
-		BeanPropertyBindingResult bindingResult = new BeanPropertyBindingResult(object, objectName);
-		validator.validate(object, bindingResult);
+	public void validate(Object target, String objectName) {
+		BeanPropertyBindingResult bindingResult = new BeanPropertyBindingResult(target, objectName);
+		validator.validate(target, bindingResult);
 
 		if (bindingResult.hasErrors()) {
 			throw new ValidacaoException(bindingResult);
