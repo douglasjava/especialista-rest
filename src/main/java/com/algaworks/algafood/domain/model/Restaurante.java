@@ -30,12 +30,11 @@ import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import com.algaworks.algafood.core.validation.Groups.CozinhaId;
-import com.algaworks.algafood.core.validation.ValorZeroIncluiDescricao;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
-@ValorZeroIncluiDescricao(valorField = "taxaFrete", descricaoField = "nome", descricaoObrigatoria = "Frete Grátis")
+
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Entity
@@ -69,6 +68,10 @@ public class Restaurante implements Serializable {
 	@Embedded
 	private Endereco endereco;
 
+	/**
+	 * ISO 8601 - 
+	 * OffsetDateTime 
+	 */
 	@CreationTimestamp
 	@Column(nullable = false, columnDefinition = "datetime")
 	private OffsetDateTime dataCadastro;
@@ -78,7 +81,9 @@ public class Restaurante implements Serializable {
 	private OffsetDateTime dataAtualizacao;
 
 	@ManyToMany
-	@JoinTable(name = "restaurante_forma_pagamento", joinColumns = @JoinColumn(name = "restaurante_id"), inverseJoinColumns = @JoinColumn(name = "forma_pagamento_id"))
+	@JoinTable(name = "restaurante_forma_pagamento", 
+			joinColumns = @JoinColumn(name = "restaurante_id"), 
+			inverseJoinColumns = @JoinColumn(name = "forma_pagamento_id"))
 	private List<FormaPagamento> formasPagamento = new ArrayList<>();
 
 	@OneToMany(mappedBy = "restaurante")

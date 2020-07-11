@@ -1,4 +1,4 @@
-package com.algaworks.algafoodapi.integracao;
+package com.algaworks.algafood;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
