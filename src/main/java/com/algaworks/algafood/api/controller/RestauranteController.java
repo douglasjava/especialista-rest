@@ -6,7 +6,6 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -81,15 +80,14 @@ public class RestauranteController {
 	@PutMapping("/{restauranteId}")
 	public RestauranteModel atualizar(@PathVariable Long restauranteId, @RequestBody @Valid RestauranteInput restauranteInput) {
 
-		Restaurante restaurante = restauranteInputDisassembler.toDomainObject(restauranteInput);
-		
-		Restaurante restauranteAtual = cadastroRestaurante.buscarOuFalhar(restauranteId);
-		
-		BeanUtils.copyProperties(restaurante, restauranteAtual, "id", "formasPagamento", "endereco", "dataCadastro",
-				"produtos");
-
 		try {
+			
+			Restaurante restauranteAtual = cadastroRestaurante.buscarOuFalhar(restauranteId);
+			
+			restauranteInputDisassembler.copyToDomainObject(restauranteInput, restauranteAtual);
+			
 			return restauranteModelAssembler.toModel(cadastroRestaurante.salvar(restauranteAtual));
+			
 		} catch (CozinhaNaoEncontradaException e) {
 			throw new NegocioException(e.getMessage());
 		}
