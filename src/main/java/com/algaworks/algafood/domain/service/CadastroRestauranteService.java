@@ -1,7 +1,10 @@
 package com.algaworks.algafood.domain.service;
 
+import com.algaworks.algafood.domain.exception.EstadoNaoEncontradoException;
+import com.algaworks.algafood.domain.model.Cidade;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,24 +25,52 @@ public class CadastroRestauranteService {
 	@Autowired
 	private CadastroCozinhaService cadastroCozinha;
 
+	@Autowired
+	private CadastroCidadeService cadastroCidade;
+
 	@Transactional
 	public Restaurante salvar(Restaurante restaurante) {
 		Long cozinhaId = restaurante.getCozinha().getId();
+		Long cidadeId = restaurante.getEndereco().getCidade().getId();
 
 		Cozinha cozinha = cadastroCozinha.buscarOuFalhar(cozinhaId);
+		Cidade cidade = cadastroCidade.buscarOuFalhar(cidadeId);
 
 		restaurante.setCozinha(cozinha);
+		restaurante.getEndereco().setCidade(cidade);
 
 		return restauranteRepository.save(restaurante);
 	}
 
 	@Transactional
+	public void ativar(Long restauranteId){
+		Restaurante restauranteAtual = buscarOuFalhar(restauranteId);
+
+		// qualquer alteração que for feita dentro desse contexto de transação
+		// será executada no final do método, por que o retorno acima está
+		// sendo gerenciado pelo entitymanager
+		restauranteAtual.ativar();
+	}
+
+	@Transactional
+	public void inativar(Long restauranteId){
+		Restaurante restauranteAtual = buscarOuFalhar(restauranteId);
+
+		restauranteAtual.inativar();
+	}
+
+	@Transactional
 	public void excluir(Long cidadeId) {
 		try {
+			restauranteRepository.deleteById(cidadeId);
 
-			Restaurante restaurante = buscarOuFalhar(cidadeId);
+			//flush adicionado pois como a anotação @Transactional
+			// está nesse bloco o commit é feito no final desse método, portanto um erro ocorrido na linha
+			// de cima serai exibido somente no final, portanto não cairia no try DataIntegrityViolationException
+			restauranteRepository.flush();
 
-			restauranteRepository.delete(restaurante);
+		} catch (EmptyResultDataAccessException e) {
+			throw new EstadoNaoEncontradoException(cidadeId);
 
 		} catch (DataIntegrityViolationException e) {
 			throw new EntidadeEmUsoException(String.format(MSG_RESTAURANTE_EM_USO, cidadeId));

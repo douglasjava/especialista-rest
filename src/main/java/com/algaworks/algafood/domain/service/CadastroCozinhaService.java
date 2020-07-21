@@ -2,6 +2,7 @@ package com.algaworks.algafood.domain.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,19 +27,21 @@ public class CadastroCozinhaService {
 	@Transactional
 	public void excluir(Long cozinhaId) {
 		try {
+			cozinhaRepository.deleteById(cozinhaId);
+			cozinhaRepository.flush();
 
-			Cozinha cozinha = cozinhaRepository.findById(cozinhaId)
-					.orElseThrow(() -> new CozinhaNaoEncontradaException(cozinhaId));
-
-			cozinhaRepository.delete(cozinha);
+		} catch (EmptyResultDataAccessException e) {
+			throw new CozinhaNaoEncontradaException(cozinhaId);
 
 		} catch (DataIntegrityViolationException e) {
 			throw new EntidadeEmUsoException(String.format(MSG_COZINHA_EM_USO, cozinhaId));
+
 		}
 	}
 
 	public Cozinha buscarOuFalhar(Long cozinhaId) {
-		return cozinhaRepository.findById(cozinhaId).orElseThrow(() -> new CozinhaNaoEncontradaException(cozinhaId));
+		return cozinhaRepository.findById(cozinhaId).
+				orElseThrow(() -> new CozinhaNaoEncontradaException(cozinhaId));
 	}
 
 }

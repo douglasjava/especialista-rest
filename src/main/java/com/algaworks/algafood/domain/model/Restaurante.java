@@ -49,18 +49,12 @@ public class Restaurante implements Serializable {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@NotBlank
 	@Column(nullable = false)
 	private String nome;
 
-	@NotNull
-	@PositiveOrZero
 	@Column(name = "taxa_frete", nullable = false)
 	private BigDecimal taxaFrete;
 
-	@Valid
-	@ConvertGroup(from = Default.class, to = CozinhaId.class)
-	@NotNull
 	@ManyToOne
 	@JoinColumn(name = "cozinha_id", nullable = false)
 	private Cozinha cozinha;
@@ -68,9 +62,11 @@ public class Restaurante implements Serializable {
 	@Embedded
 	private Endereco endereco;
 
+	private Boolean ativo = Boolean.TRUE;
+
 	/**
-	 * ISO 8601 - 
-	 * OffsetDateTime 
+	 * ISO 8601 -
+	 * OffsetDateTime
 	 */
 	@CreationTimestamp
 	@Column(nullable = false, columnDefinition = "datetime")
@@ -81,12 +77,20 @@ public class Restaurante implements Serializable {
 	private OffsetDateTime dataAtualizacao;
 
 	@ManyToMany
-	@JoinTable(name = "restaurante_forma_pagamento", 
-			joinColumns = @JoinColumn(name = "restaurante_id"), 
+	@JoinTable(name = "restaurante_forma_pagamento",
+			joinColumns = @JoinColumn(name = "restaurante_id"),
 			inverseJoinColumns = @JoinColumn(name = "forma_pagamento_id"))
 	private List<FormaPagamento> formasPagamento = new ArrayList<>();
 
 	@OneToMany(mappedBy = "restaurante")
 	private List<Produto> produtos = new ArrayList<>();
+
+	public void ativar() {
+		setAtivo(true);
+	}
+
+	public void inativar() {
+		setAtivo(false);
+	}
 
 }

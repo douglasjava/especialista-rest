@@ -2,6 +2,7 @@ package com.algaworks.algafood.domain.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,11 +27,11 @@ public class CadastroEstadoService {
 	@Transactional
 	public void excluir(Long estadoId) {
 		try {
+			estadoRepository.deleteById(estadoId);
+			estadoRepository.flush();
 
-			Estado estado = estadoRepository.findById(estadoId)
-					.orElseThrow(() -> new EstadoNaoEncontradoException(estadoId));
-
-			estadoRepository.delete(estado);
+		} catch (EmptyResultDataAccessException e) {
+			throw new EstadoNaoEncontradoException(estadoId);
 
 		} catch (DataIntegrityViolationException e) {
 			throw new EntidadeEmUsoException(String.format(MSG_ESTADO_EM_USO, estadoId));

@@ -6,6 +6,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
+import com.algaworks.algafood.domain.exception.CidadeNaoEncontradaException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -72,7 +73,7 @@ public class RestauranteController {
 		try {
 			Restaurante restaurante = restauranteInputDisassembler.toDomainObject(restauranteInput);
 			return restauranteModelAssembler.toModel(cadastroRestaurante.salvar(restaurante));
-		} catch (CozinhaNaoEncontradaException e) {
+		} catch (CozinhaNaoEncontradaException | CidadeNaoEncontradaException e) {
 			throw new NegocioException(e.getMessage());
 		}
 	}
@@ -88,7 +89,7 @@ public class RestauranteController {
 			
 			return restauranteModelAssembler.toModel(cadastroRestaurante.salvar(restauranteAtual));
 			
-		} catch (CozinhaNaoEncontradaException e) {
+		} catch (CozinhaNaoEncontradaException | CidadeNaoEncontradaException e) {
 			throw new NegocioException(e.getMessage());
 		}
 
@@ -121,6 +122,18 @@ public class RestauranteController {
 	public ResponseEntity<Cidade> remover(@PathVariable Long restauranteId) {
 		cadastroRestaurante.excluir(restauranteId);
 		return ResponseEntity.noContent().build();
+	}
+
+	@PutMapping("/{restauranteId}/ativo")
+	@ResponseStatus(HttpStatus.NO_CONTENT)
+	public void ativar(@PathVariable Long restauranteId) {
+		cadastroRestaurante.ativar(restauranteId);
+	}
+
+	@DeleteMapping("/{restauranteId}/ativo")
+	@ResponseStatus(HttpStatus.NO_CONTENT)
+	public void inativar(@PathVariable Long restauranteId) {
+		cadastroRestaurante.inativar(restauranteId);
 	}
 		
 }

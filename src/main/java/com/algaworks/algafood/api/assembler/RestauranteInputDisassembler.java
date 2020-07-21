@@ -1,5 +1,6 @@
 package com.algaworks.algafood.api.assembler;
 
+import com.algaworks.algafood.domain.model.Cidade;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -22,7 +23,12 @@ public class RestauranteInputDisassembler {
 		// Para evitar org.hibernate.HibernateException: identifier of an instance of 
 		// com.algaworks.algafood.domain.model.Cozinha was altered from 1 to 2
 		restaurante.setCozinha(new Cozinha());
-		
+
+		if(restaurante.getEndereco() != null){
+			restaurante.getEndereco().setCidade(new Cidade());
+		}
+
+
 		modelMapper.map(restauranteInput, restaurante);
 	}
 }
