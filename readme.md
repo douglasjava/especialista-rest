@@ -33,5 +33,5 @@ Import as *Existing Maven Project* and run it as *Spring Boot App*.
 - 400 "Bad Request" status used when information of user there are incorrect
 - 404 "Not Found" status used when an recurse not exist example = endpoint /restaurantes not exist
 - Commando for flyway: mvn flyway:repair -Dflyway.configFiles=src/main/resources/flyway.properties
-
-
+- O método PUT é idempotente. Um método é considerado idempotente se o resultado de uma requisição realizada com sucesso é independente do número de vezes que é executada.
+- O método POST não é idempotente, pois a cada requisição haverá uma alteração no sistema. (um registro será incluído)
