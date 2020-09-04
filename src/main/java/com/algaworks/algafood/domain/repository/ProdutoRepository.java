@@ -20,4 +20,8 @@ public interface ProdutoRepository extends CustomJpaRepository<Produto, Long> {
     Optional<Produto> findByRestauranteIdAndId(Long restauranteId, Long produtoId);
 
     List<Produto> findByRestaurante(Restaurante restaurante);
+
+    @Query("from Produto p where p.ativo = true and p.restaurante = :restaurante")
+    List<Produto> findAtivosByRestaurante(Restaurante restaurante);
+
 }

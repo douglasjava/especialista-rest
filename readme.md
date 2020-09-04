@@ -35,3 +35,7 @@ Import as *Existing Maven Project* and run it as *Spring Boot App*.
 - Commando for flyway: mvn flyway:repair -Dflyway.configFiles=src/main/resources/flyway.properties
 - O método PUT é idempotente. Um método é considerado idempotente se o resultado de uma requisição realizada com sucesso é independente do número de vezes que é executada.
 - O método POST não é idempotente, pois a cada requisição haverá uma alteração no sistema. (um registro será incluído)
+- Tomcat não aceita colchetes [] 
+- *ERRO* Invalid character found in the request target. The valid characters are defined in RFC 7230 and RFC 3986*
+- para correção na URLS encoda os caracteres especiais -> nesse caso [ -> %5B   ] -> %5D
+- para aceitar tem que costumizar o tomcat embedado que o spring boot tem (TomcatCustomizer)
