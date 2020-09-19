@@ -14,6 +14,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
@@ -130,7 +131,15 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
 
 		return super.handleExceptionInternal(ex, body, headers, status, request);
 	}
-	
+
+	@Override
+	protected ResponseEntity<Object> handleBindException(BindException bindingResult, HttpHeaders headers, HttpStatus status, WebRequest request) {
+
+		Problem problem = getProblemValidationInternal(bindingResult, status);
+
+		return handleExceptionInternal(bindingResult, problem, headers, status, request);
+	}
+
 	@ExceptionHandler(Exception.class)
 	public ResponseEntity<Object> handleUncaught(Exception ex, WebRequest request) {
 		HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
@@ -260,32 +269,41 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
 	
 	private ResponseEntity<Object> handleValidationInternal(Exception ex, BindingResult bindingResult, HttpHeaders headers,
 			HttpStatus status, WebRequest request) {
+
+		Problem problem = getProblemValidationInternal(bindingResult, status);
+
+		return handleExceptionInternal(ex, problem, headers, status, request);
+	}
+
+	private Problem getProblemValidationInternal(BindingResult bindingResult, HttpStatus status) {
 		ProblemType problemType = ProblemType.DADOS_INVALIDOS;
-	    String detail = "Um ou mais campos estão inválidos. Faça o preenchimento correto e tente novamente.";
-	    
-	    List<Problem.Object> problemObjects = bindingResult.getAllErrors().stream()
-	    		.map(objectError -> {
-	    			String message = messageSource.getMessage(objectError, LocaleContextHolder.getLocale());
-	    			
-	    			String name = objectError.getObjectName();
-	    			
-	    			if (objectError instanceof FieldError) {
-	    				name = ((FieldError) objectError).getField();
-	    			}
-	    			
-	    			return Problem.Object.builder()
-	    				.name(name)
-	    				.userMessage(message)
-	    				.build();
-	    		})
-	    		.collect(Collectors.toList());
-	    
-	    Problem problem = createProblemBuilder(status, problemType, detail)
-	        .userMessage(detail)
-	        .objects(problemObjects)
-	        .build();
-	    
-	    return handleExceptionInternal(ex, problem, headers, status, request);
+		String detail = "Um ou mais campos estão inválidos. Faça o preenchimento correto e tente novamente.";
+
+		Problem problem = createProblemBuilder(status, problemType, detail)
+			.userMessage(detail)
+			.objects(getProblemObjects(bindingResult))
+			.build();
+
+		return problem;
+	}
+
+	private List<Problem.Object> getProblemObjects(BindingResult bindingResult){
+		return bindingResult.getAllErrors().stream()
+				.map(objectError -> {
+					String message = messageSource.getMessage(objectError, LocaleContextHolder.getLocale());
+
+					String name = objectError.getObjectName();
+
+					if (objectError instanceof FieldError) {
+						name = ((FieldError) objectError).getField();
+					}
+
+					return Problem.Object.builder()
+							.name(name)
+							.userMessage(message)
+							.build();
+				})
+				.collect(Collectors.toList());
 	}
 
 }
