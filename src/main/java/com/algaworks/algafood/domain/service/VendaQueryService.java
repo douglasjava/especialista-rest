@@ -8,6 +8,6 @@ import java.util.List;
 
 public interface VendaQueryService {
 
-    List<VendaDiaria> consultarVendaDiarias(VendaDiariaFilter vendaDiariaFilter);
+    List<VendaDiaria> consultarVendaDiarias(VendaDiariaFilter vendaDiariaFilter, String timeOffset);
 
 }

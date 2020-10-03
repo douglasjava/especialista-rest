@@ -23,17 +23,24 @@ public class VendaQueryServiceImpl implements VendaQueryService {
     }
 
     @Override
-    public List<VendaDiaria> consultarVendaDiarias(VendaDiariaFilter vendaDiariaFilter) {
+    public List<VendaDiaria> consultarVendaDiarias(VendaDiariaFilter vendaDiariaFilter, String timeOffset) {
 
         var predicates = new ArrayList<>();
         var builder = entityManager.getCriteriaBuilder();
         var query = builder.createQuery(VendaDiaria.class);// Mapear o retorno
         var root = query.from(Pedido.class); //Mapear o from
 
+        // Função criada para permitir escolher qual timeZone o usuário quer o retorno das datas
+        // função para mySQL
+        var functionConvertTzDataCriacao =
+                builder.function("convert_tz", Date.class, root.get("dataCriacao"),
+                        builder.literal("+00:00"), builder.literal(timeOffset));
+
+
         //Criada a função nativa do mysql, utilizando date para truncar a data retirando hh:mm:ss
         //Observação, ainda não está sendo possivel retornar LocalData
         var functionDateDataCriacao =
-                builder.function("date", Date.class, root.get("dataCriacao"));
+                builder.function("date", Date.class, functionConvertTzDataCriacao);
 
         // O select a ser feito
         // passando a função e funções do proprio builder
