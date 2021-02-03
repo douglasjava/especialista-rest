@@ -39,3 +39,7 @@ Import as *Existing Maven Project* and run it as *Spring Boot App*.
 - *ERRO* Invalid character found in the request target. The valid characters are defined in RFC 7230 and RFC 3986*
 - para correção na URLS encoda os caracteres especiais -> nesse caso [ -> %5B   ] -> %5D
 - para aceitar tem que costumizar o tomcat embedado que o spring boot tem (TomcatCustomizer)
+- Para upload de arquivo, sempre observar que a regra principal de tamanho de arquivo é a que é configurado do application.properties, portanto
+para validar individualmente cada cenario de upload de arquivo, a regra dos DTO para ser validada, ela tem que passar pela regra do application 
+exemplo configurado no application 20MB e em um determinado DTO configurado 2MB a validação vai passar pelo application e vai ser barrada pela a 
+validação feita no DTO.

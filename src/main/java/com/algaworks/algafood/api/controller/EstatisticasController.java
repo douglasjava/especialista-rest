@@ -1,10 +1,7 @@
 package com.algaworks.algafood.api.controller;
 
-import com.algaworks.algafood.domain.filter.VendaDiariaFilter;
-import com.algaworks.algafood.domain.model.dto.VendaDiaria;
-import com.algaworks.algafood.domain.service.VendaQueryService;
-import com.algaworks.algafood.domain.service.VendaReportService;
-import com.algaworks.algafood.infrastructure.repository.service.report.VendaReportServiceImpl;
+import java.util.List;
+
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -13,7 +10,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
+import com.algaworks.algafood.domain.filter.VendaDiariaFilter;
+import com.algaworks.algafood.domain.model.dto.VendaDiaria;
+import com.algaworks.algafood.domain.service.VendaQueryService;
+import com.algaworks.algafood.domain.service.VendaReportService;
 
 @RestController
 @RequestMapping("/estatisticas")

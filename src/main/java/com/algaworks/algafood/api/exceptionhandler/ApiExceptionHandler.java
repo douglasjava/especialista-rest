@@ -6,6 +6,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.apache.tomcat.util.http.fileupload.FileUploadBase;
 import org.springframework.beans.TypeMismatchException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
@@ -17,12 +18,14 @@ import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
+import org.springframework.web.HttpMediaTypeNotAcceptableException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
@@ -42,6 +45,15 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
 	
 	@Autowired
 	private MessageSource messageSource;
+	
+	
+	@Override
+	protected ResponseEntity<Object> handleHttpMediaTypeNotAcceptable(HttpMediaTypeNotAcceptableException ex,
+			HttpHeaders headers, HttpStatus status, WebRequest request) {
+
+		return ResponseEntity.status(status).headers(headers).build();
+	}
+	
 	
 	@Override
 	protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
@@ -138,6 +150,29 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
 		Problem problem = getProblemValidationInternal(bindingResult, status);
 
 		return handleExceptionInternal(bindingResult, problem, headers, status, request);
+	}
+
+	@ExceptionHandler(MaxUploadSizeExceededException.class)
+	public ResponseEntity<Object> handleMaxUploadFileSizeExceeded(MaxUploadSizeExceededException ex, WebRequest webRequest) {
+
+		HttpStatus status = HttpStatus.BAD_REQUEST;
+		ProblemType problemType = ProblemType.MAX_FILE_SIZE_EXCEEDED;
+		String detail = ex.getMessage();
+		String userMessage = "O arquivo que você está tentando enviar excede o tamanho máximo permitido";
+
+		if(ex.getRootCause() instanceof FileUploadBase.FileSizeLimitExceededException) {
+			var exFile = (FileUploadBase.FileSizeLimitExceededException) ex.getRootCause();
+			detail = exFile.getMessage();
+			userMessage = String.format("O arquivo que você está tentando enviar excede o tamanho máximo permitido de %d bytes",
+					exFile.getPermittedSize() );
+		}
+
+		Problem problem = createProblemBuilder(status, problemType, detail)
+				.userMessage(userMessage)
+				.build();
+
+		return handleExceptionInternal(ex, problem, new HttpHeaders(), status, webRequest);
+
 	}
 
 	@ExceptionHandler(Exception.class)

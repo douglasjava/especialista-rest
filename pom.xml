@@ -22,6 +22,7 @@
 		<modelmapper.version>2.3.0</modelmapper.version>
 		<springfox-version>2.9.2</springfox-version>
 		<jasperreports.version>6.10.0</jasperreports.version>
+		<aws-java-sdk-s3.version>1.11.671</aws-java-sdk-s3.version>
 	</properties>
 
 	<dependencies>
@@ -134,6 +135,23 @@
 			<groupId>net.sf.jasperreports</groupId>
 			<artifactId>jasperreports-functions</artifactId>
 			<version>${jasperreports.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.amazonaws</groupId>
+			<artifactId>aws-java-sdk-s3</artifactId>
+			<version>${aws-java-sdk-s3.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-mail</artifactId>
+		</dependency>
+
+		<!-- Biblioteca usada para fazer build de html com o java para montagem de html -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-freemarker</artifactId>
 		</dependency>
 
 	</dependencies>

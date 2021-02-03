@@ -7,7 +7,7 @@ import javax.validation.Valid;
 
 import com.algaworks.algafood.core.data.PageableTranslator;
 import com.algaworks.algafood.domain.filter.PedidoFilter;
-import com.algaworks.algafood.infrastructure.repository.spec.PedidoSpecs;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -34,6 +34,7 @@ import com.algaworks.algafood.domain.model.Usuario;
 import com.algaworks.algafood.domain.repository.PedidoRepository;
 import com.algaworks.algafood.domain.service.EmissaoPedidoService;
 import com.algaworks.algafood.domain.service.PedidoService;
+import com.algaworks.algafood.infrastructure.repository.spec.PedidoSpecs;
 
 @RestController
 @RequestMapping("/pedidos")

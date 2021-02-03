@@ -1,0 +1,36 @@
+package com.algaworks.algafood.domain.listener;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.transaction.event.TransactionalEventListener;
+
+import com.algaworks.algafood.domain.event.PedidoCanceladoEvent;
+import com.algaworks.algafood.domain.model.Pedido;
+import com.algaworks.algafood.domain.service.EnvioEmailServiceService;
+import com.algaworks.algafood.domain.service.EnvioEmailServiceService.Mensagem;
+
+@Component
+public class NotificacaoClientePedidoCanceladoListener {
+
+	@Autowired
+	private EnvioEmailServiceService envioEmail;
+	
+	@TransactionalEventListener
+	public void aoCancelarPedido(PedidoCanceladoEvent event) {
+
+		Pedido pedido = event.getPedido();
+		pedido.setDataCancelamento(pedido.getDataCancelamento().minusHours(3));
+
+		var mensagem = Mensagem.builder()
+				.assunto(pedido.getRestaurante().getNome() + " - Pedido cancelado")
+				.corpo("pedido-cancelado.html")
+				.variavel("pedido", pedido)
+				.destinatario(pedido.getCliente().getEmail())
+				.build();
+
+		envioEmail.enviar(mensagem);
+	
+
+	}
+
+}

@@ -28,4 +28,6 @@ public class PedidoModel {
     private EnderecoModel enderecoEntrega;
     private List<ItemPedidoModel> itens;
 
+    
+    
 }
