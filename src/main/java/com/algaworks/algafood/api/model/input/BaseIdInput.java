@@ -5,10 +5,13 @@ import lombok.Setter;
 
 import javax.validation.constraints.NotNull;
 
+import io.swagger.annotations.ApiModelProperty;
+
 @Getter
 @Setter
 public abstract class BaseIdInput {
 
+	@ApiModelProperty(example = "1", required = true)
     @NotNull
     private Long id;
 

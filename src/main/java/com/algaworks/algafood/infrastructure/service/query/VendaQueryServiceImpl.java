@@ -33,14 +33,14 @@ public class VendaQueryServiceImpl implements VendaQueryService {
         // Função criada para permitir escolher qual timeZone o usuário quer o retorno das datas
         // função para mySQL
         var functionConvertTzDataCriacao =
-                builder.function("convert_tz", Date.class, root.get("dataCriacao"),
-                        builder.literal("+00:00"), builder.literal(timeOffset));
+                		builder.function("convert_tz", Date.class, root.get("dataCriacao"),
+                        builder.literal("+00:00"), 
+                        builder.literal(timeOffset));
 
 
         //Criada a função nativa do mysql, utilizando date para truncar a data retirando hh:mm:ss
         //Observação, ainda não está sendo possivel retornar LocalData
-        var functionDateDataCriacao =
-                builder.function("date", Date.class, functionConvertTzDataCriacao);
+        var functionDateDataCriacao = builder.function("date", Date.class, functionConvertTzDataCriacao);
 
         // O select a ser feito
         // passando a função e funções do proprio builder
@@ -53,18 +53,18 @@ public class VendaQueryServiceImpl implements VendaQueryService {
         predicates.add(root.get("status").in(StatusPedido.CONFIRMADO, StatusPedido.ENTREGUE));
 
         if (vendaDiariaFilter.getRestauranteId() != null) {
-            predicates.add(builder.equal(
-                    root.get("restaurante"), vendaDiariaFilter.getRestauranteId()));
+            predicates.add(builder.equal(root.get("restaurante"), vendaDiariaFilter.getRestauranteId()));
+            
         }
 
         if (vendaDiariaFilter.getDataCriacaoInicio() != null) {
-            predicates.add(builder.greaterThanOrEqualTo(
-                    root.get("dataCriacao"), vendaDiariaFilter.getDataCriacaoInicio()));
+            predicates.add(builder.greaterThanOrEqualTo(root.get("dataCriacao"), vendaDiariaFilter.getDataCriacaoInicio()));
+            
         }
 
         if (vendaDiariaFilter.getDataCriacaoFim() != null) {
-            predicates.add(builder.lessThanOrEqualTo(
-                    root.get("dataCriacao"), vendaDiariaFilter.getDataCriacaoFim()));
+            predicates.add(builder.lessThanOrEqualTo(root.get("dataCriacao"), vendaDiariaFilter.getDataCriacaoFim()));
+            
         }
 
         query.select(selection);
@@ -72,6 +72,7 @@ public class VendaQueryServiceImpl implements VendaQueryService {
         query.where(predicates.toArray(new Predicate[0]));
 
         return entityManager.createQuery(query).getResultList();
+        
     }
 
 }

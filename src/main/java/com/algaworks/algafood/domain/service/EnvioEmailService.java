@@ -8,7 +8,7 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.Singular;
 
-public interface EnvioEmailServiceService {
+public interface EnvioEmailService {
 
 	void enviar(Mensagem mensagem);
 

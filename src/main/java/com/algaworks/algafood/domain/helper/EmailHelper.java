@@ -10,7 +10,7 @@ import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
 
 import com.algaworks.algafood.core.email.EmailProperties;
 import com.algaworks.algafood.core.email.OffsetDateTimeFormat;
-import com.algaworks.algafood.domain.service.EnvioEmailServiceService.Mensagem;
+import com.algaworks.algafood.domain.service.EnvioEmailService.Mensagem;
 import com.algaworks.algafood.infrastructure.service.email.EmailException;
 
 import freemarker.template.Configuration;

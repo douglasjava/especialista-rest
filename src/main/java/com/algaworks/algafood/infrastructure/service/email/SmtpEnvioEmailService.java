@@ -7,12 +7,12 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 
 import com.algaworks.algafood.domain.helper.EmailHelper;
-import com.algaworks.algafood.domain.service.EnvioEmailServiceService;
+import com.algaworks.algafood.domain.service.EnvioEmailService;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class SmtpEnvioEmailService implements EnvioEmailServiceService {
+public class SmtpEnvioEmailService implements EnvioEmailService {
 
 	@Autowired
 	private JavaMailSender mailSender;

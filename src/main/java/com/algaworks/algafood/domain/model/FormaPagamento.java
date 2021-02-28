@@ -1,6 +1,7 @@
 package com.algaworks.algafood.domain.model;
 
 import java.io.Serializable;
+import java.time.OffsetDateTime;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -10,6 +11,7 @@ import javax.persistence.Id;
 
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -19,7 +21,7 @@ import lombok.EqualsAndHashCode;
 @Entity
 @DynamicInsert
 @DynamicUpdate
-public class FormaPagamento  implements Serializable {
+public class FormaPagamento implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
@@ -30,5 +32,8 @@ public class FormaPagamento  implements Serializable {
 
 	@Column(nullable = false)
 	private String descricao;
+
+	@UpdateTimestamp
+	private OffsetDateTime dataAtualizacao;
 
 }

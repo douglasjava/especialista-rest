@@ -3,7 +3,7 @@ package com.algaworks.algafood.infrastructure.service.email;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.algaworks.algafood.domain.helper.EmailHelper;
-import com.algaworks.algafood.domain.service.EnvioEmailServiceService;
+import com.algaworks.algafood.domain.service.EnvioEmailService;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -17,7 +17,7 @@ import lombok.extern.slf4j.Slf4j;
  *
  */
 @Slf4j
-public class FakeEnvioEmailService implements EnvioEmailServiceService {
+public class FakeEnvioEmailService implements EnvioEmailService {
 
 	@Autowired
 	private EmailHelper emailHelper;

@@ -5,14 +5,12 @@ import java.util.Map;
 
 import javax.validation.Valid;
 
-import com.algaworks.algafood.core.data.PageableTranslator;
-import com.algaworks.algafood.domain.filter.PedidoFilter;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -27,8 +25,11 @@ import com.algaworks.algafood.api.assembler.PedidoResumoModalAssembler;
 import com.algaworks.algafood.api.model.PedidoModel;
 import com.algaworks.algafood.api.model.PedidoResumoModel;
 import com.algaworks.algafood.api.model.input.PedidoInput;
+import com.algaworks.algafood.api.openapi.controller.PedidoControllerOpenApi;
+import com.algaworks.algafood.core.data.PageableTranslator;
 import com.algaworks.algafood.domain.exception.EntidadeNaoEncontradaException;
 import com.algaworks.algafood.domain.exception.NegocioException;
+import com.algaworks.algafood.domain.filter.PedidoFilter;
 import com.algaworks.algafood.domain.model.Pedido;
 import com.algaworks.algafood.domain.model.Usuario;
 import com.algaworks.algafood.domain.repository.PedidoRepository;
@@ -36,9 +37,12 @@ import com.algaworks.algafood.domain.service.EmissaoPedidoService;
 import com.algaworks.algafood.domain.service.PedidoService;
 import com.algaworks.algafood.infrastructure.repository.spec.PedidoSpecs;
 
+import lombok.AllArgsConstructor;
+
+@AllArgsConstructor
 @RestController
-@RequestMapping("/pedidos")
-public class PedidoController {
+@RequestMapping(path = "/pedidos", produces = MediaType.APPLICATION_JSON_VALUE)
+public class PedidoController implements PedidoControllerOpenApi {
 
     private PedidoRepository pedidoRepository;
     private EmissaoPedidoService emissaoPedidoService;
@@ -47,21 +51,8 @@ public class PedidoController {
     private PedidoInputDisassembler pedidoInputDisassembler;
     private PedidoService pedidoService;
 
-    public PedidoController(PedidoRepository pedidoRepository,
-                            EmissaoPedidoService emissaoPedidoService,
-                            PedidoModelAssembler pedidoModelAssembler,
-                            PedidoResumoModalAssembler pedidoResumoModalAssembler,
-                            PedidoInputDisassembler pedidoInputDisassembler,
-                            PedidoService pedidoService) {
 
-        this.pedidoRepository = pedidoRepository;
-        this.emissaoPedidoService = emissaoPedidoService;
-        this.pedidoModelAssembler = pedidoModelAssembler;
-        this.pedidoResumoModalAssembler = pedidoResumoModalAssembler;
-        this.pedidoInputDisassembler = pedidoInputDisassembler;
-        this.pedidoService = pedidoService;
-    }
-
+    @Override
     @GetMapping
     public Page<PedidoResumoModel> pesquisar(PedidoFilter pedidoFilter,
                                              @PageableDefault(size = 10) Pageable pageable) {
@@ -99,6 +90,7 @@ public class PedidoController {
     }
     **/
 
+    @Override
     @GetMapping("/{codigoPedido}")
     public PedidoModel buscar(@PathVariable String codigoPedido) {
         Pedido pedido = pedidoService.buscarOuFalhar(codigoPedido);
@@ -106,6 +98,7 @@ public class PedidoController {
         return pedidoModelAssembler.toModel(pedido);
     }
 
+    @Override
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public PedidoModel adicionar(@RequestBody @Valid PedidoInput pedidoInput) {

@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import com.algaworks.algafood.domain.service.EnvioEmailServiceService;
+import com.algaworks.algafood.domain.service.EnvioEmailService;
 
 @Configuration
 public class EmailConfig {
@@ -13,7 +13,7 @@ public class EmailConfig {
 	private EmailProperties emailProperties;
 
 	@Bean
-	public EnvioEmailServiceService envioEmailServiceService() {
+	public EnvioEmailService envioEmailServiceService() {
 		return emailProperties.getImpl().getImplementacao();
 	}
 

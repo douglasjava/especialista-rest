@@ -3,6 +3,7 @@ package com.algaworks.algafood.api.controller;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -13,40 +14,40 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.algaworks.algafood.api.assembler.PermissaoModelAssembler;
 import com.algaworks.algafood.api.model.PermissaoModel;
+import com.algaworks.algafood.api.openapi.controller.GrupoPermissaoControllerOpenApi;
 import com.algaworks.algafood.domain.model.Grupo;
 import com.algaworks.algafood.domain.service.CadastroGrupoService;
 
+import lombok.AllArgsConstructor;
+
+@AllArgsConstructor
 @RestController
-@RequestMapping("/grupos/{grupoId}/permissoes")
-public class GrupoPermissoesController {
+@RequestMapping(path = "/grupos/{grupoId}/permissoes", produces = MediaType.APPLICATION_JSON_VALUE)
+public class GrupoPermissoesController implements GrupoPermissaoControllerOpenApi {
 
-    private CadastroGrupoService cadastroGrupoService;
-    private PermissaoModelAssembler permissaoModelAssembler;
+	private CadastroGrupoService cadastroGrupoService;
+	private PermissaoModelAssembler permissaoModelAssembler;
 
+	@Override
+	@GetMapping
+	public List<PermissaoModel> listar(@PathVariable Long grupoId) {
+		Grupo grupo = cadastroGrupoService.buscarOuFalhar(grupoId);
 
-    public GrupoPermissoesController(CadastroGrupoService cadastroGrupoService,
-                                     PermissaoModelAssembler permissaoModelAssembler) {
-        this.cadastroGrupoService = cadastroGrupoService;
-        this.permissaoModelAssembler = permissaoModelAssembler;
-    }
+		return permissaoModelAssembler.toCollectionModel(grupo.getPermissoes());
+	}
 
-    @GetMapping
-    public List<PermissaoModel> listar(@PathVariable Long grupoId) {
-        Grupo grupo = cadastroGrupoService.buscarOuFalhar(grupoId);
+	@Override
+	@DeleteMapping("/{permissaoId}")
+	@ResponseStatus(HttpStatus.NO_CONTENT)
+	public void desassociar(@PathVariable Long grupoId, @PathVariable Long permissaoId) {
+		cadastroGrupoService.desassociarPermissao(grupoId, permissaoId);
+	}
 
-        return permissaoModelAssembler.toCollectionModel(grupo.getPermissoes());
-    }
-
-    @DeleteMapping("/{permissaoId}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void desassociar(@PathVariable Long grupoId, @PathVariable Long permissaoId) {
-        cadastroGrupoService.desassociarPermissao(grupoId, permissaoId);
-    }
-
-    @PutMapping("/{permissaoId}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void associar(@PathVariable Long grupoId, @PathVariable Long permissaoId) {
-        cadastroGrupoService.associarPermissao(grupoId, permissaoId);
-    }
+	@Override
+	@PutMapping("/{permissaoId}")
+	@ResponseStatus(HttpStatus.NO_CONTENT)
+	public void associar(@PathVariable Long grupoId, @PathVariable Long permissaoId) {
+		cadastroGrupoService.associarPermissao(grupoId, permissaoId);
+	}
 
 }

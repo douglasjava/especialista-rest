@@ -6,14 +6,14 @@ import org.springframework.transaction.event.TransactionalEventListener;
 
 import com.algaworks.algafood.domain.event.PedidoCanceladoEvent;
 import com.algaworks.algafood.domain.model.Pedido;
-import com.algaworks.algafood.domain.service.EnvioEmailServiceService;
-import com.algaworks.algafood.domain.service.EnvioEmailServiceService.Mensagem;
+import com.algaworks.algafood.domain.service.EnvioEmailService;
+import com.algaworks.algafood.domain.service.EnvioEmailService.Mensagem;
 
 @Component
 public class NotificacaoClientePedidoCanceladoListener {
 
 	@Autowired
-	private EnvioEmailServiceService envioEmail;
+	private EnvioEmailService envioEmail;
 	
 	@TransactionalEventListener
 	public void aoCancelarPedido(PedidoCanceladoEvent event) {

@@ -14,30 +14,33 @@ import java.util.Locale;
 @Service
 public class VendaReportServiceImpl implements VendaReportService {
 
-    private VendaQueryService vendaQueryService;
+	private VendaQueryService vendaQueryService;
 
-    public VendaReportServiceImpl(VendaQueryService vendaQueryService) {
-        this.vendaQueryService = vendaQueryService;
-    }
+	public VendaReportServiceImpl(VendaQueryService vendaQueryService) {
+		this.vendaQueryService = vendaQueryService;
+	}
 
-    @Override
-    public byte[] emitirVendasDiarias(VendaDiariaFilter filtro, String timeOffset) {
-        try {
-            var inputStream = this.getClass().getResourceAsStream(
-                    "/relatorios/vendas-diarias.jasper");
+	@Override
+	public byte[] emitirVendasDiarias(VendaDiariaFilter filtro, String timeOffset) {
 
-            var parametros = new HashMap<String, Object>();
-            parametros.put("REPORT_LOCALE", new Locale("pt", "BR"));
+		try {
 
-            var vendasDiarias = vendaQueryService.consultarVendaDiarias(filtro, timeOffset);
-            var dataSource = new JRBeanCollectionDataSource(vendasDiarias);
+			var inputStream = this.getClass().getResourceAsStream("/relatorios/vendas-diarias.jasper");
 
-            var jasperPrint = JasperFillManager.fillReport(inputStream, parametros, dataSource);
+			var parametros = new HashMap<String, Object>();
+			parametros.put("REPORT_LOCALE", new Locale("pt", "BR"));
 
-            return JasperExportManager.exportReportToPdf(jasperPrint);
-        } catch (Exception e) {
-            throw new ReportException("Não foi possível emitir relatório de vendas diárias", e);
-        }
-    }
+			var vendasDiarias = vendaQueryService.consultarVendaDiarias(filtro, timeOffset);
+			var dataSource = new JRBeanCollectionDataSource(vendasDiarias);
+
+			var jasperPrint = JasperFillManager.fillReport(inputStream, parametros, dataSource);
+
+			return JasperExportManager.exportReportToPdf(jasperPrint);
+
+		} catch (Exception e) {
+			throw new ReportException("Não foi possível emitir relatório de vendas diárias", e);
+			
+		}
+	}
 
 }

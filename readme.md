@@ -43,3 +43,10 @@ Import as *Existing Maven Project* and run it as *Spring Boot App*.
 para validar individualmente cada cenario de upload de arquivo, a regra dos DTO para ser validada, ela tem que passar pela regra do application 
 exemplo configurado no application 20MB e em um determinado DTO configurado 2MB a validação vai passar pelo application e vai ser barrada pela a 
 validação feita no DTO.
+- Para subir um servidor web, podemos usar como opção o python na pasta onde está o arquivo web executar o seguinte comando `python -m http.server` por padrão vai subir na porta 8000
+- link: https://developer.mozilla.org/pt-BR/docs/Learn/Common_questions/Como_configurar_um_servidor_de_testes_local
+- Colocar tbm um endereço no /ect/host -> http://www.algafood.local:8000/ -> 127.0.0.1
+
+- Existe um pré validador, implementado pela especificação do CORS que verifica uma requisição simples, fazendo uma busca simples com o OPTIONS
+- a propriedade @CrossOrigin(maxAge = 10) informa o tempo que essa veriifcação deve ficar no cache, nesse exemplo a cada 10s o cache é limpo e se surgir uma requisição não simples
+- essa requisição com OPTIONS será feita.

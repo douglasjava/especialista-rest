@@ -10,23 +10,23 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.algaworks.algafood.api.openapi.controller.EstatisticasControllerOpenApi;
 import com.algaworks.algafood.domain.filter.VendaDiariaFilter;
 import com.algaworks.algafood.domain.model.dto.VendaDiaria;
 import com.algaworks.algafood.domain.service.VendaQueryService;
 import com.algaworks.algafood.domain.service.VendaReportService;
 
+import lombok.AllArgsConstructor;
+
+@AllArgsConstructor
 @RestController
-@RequestMapping("/estatisticas")
-public class EstatisticasController {
+@RequestMapping(path = "/estatisticas", produces = MediaType.APPLICATION_JSON_VALUE)
+public class EstatisticasController implements EstatisticasControllerOpenApi {
 
     private VendaQueryService vendaQueryService;
     private VendaReportService vendaReportService;
 
-    public EstatisticasController(VendaQueryService vendaQueryService, VendaReportService vendaReportService) {
-        this.vendaQueryService = vendaQueryService;
-        this.vendaReportService = vendaReportService;
-    }
-
+    @Override
     @GetMapping(path = "/vendas-diarias", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<VendaDiaria> consultarVendasDiarias(VendaDiariaFilter vendaDiariaFilter,
                                                     @RequestParam(required = false, defaultValue = "+00:00") String timeOffset) {
@@ -34,6 +34,7 @@ public class EstatisticasController {
     }
 
 
+    @Override
     @GetMapping(path = "/vendas-diarias", produces = MediaType.APPLICATION_PDF_VALUE)
     public ResponseEntity<byte[]> consultarVendasDiariasPdf(VendaDiariaFilter vendaDiariaFilter,
                                                     @RequestParam(required = false, defaultValue = "+00:00") String timeOffset) {

@@ -1,6 +1,6 @@
 package com.algaworks.algafood.core.email;
 
-import com.algaworks.algafood.domain.service.EnvioEmailServiceService;
+import com.algaworks.algafood.domain.service.EnvioEmailService;
 import com.algaworks.algafood.infrastructure.service.email.FakeEnvioEmailService;
 import com.algaworks.algafood.infrastructure.service.email.SandBoxEnvioEmailService;
 import com.algaworks.algafood.infrastructure.service.email.SmtpEnvioEmailService;
@@ -14,9 +14,9 @@ public enum TipoImplEmail {
 	SMTP(new SmtpEnvioEmailService()), 
 	SANDBOX(new SandBoxEnvioEmailService());
 	
-	private EnvioEmailServiceService implementacao;
+	private EnvioEmailService implementacao;
 	
-	TipoImplEmail(EnvioEmailServiceService implementacao) {
+	TipoImplEmail(EnvioEmailService implementacao) {
 		this.implementacao = implementacao;
 	}
 
