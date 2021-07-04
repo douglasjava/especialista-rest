@@ -2,16 +2,17 @@ package com.algaworks.algafood.api.openapi.controller;
 
 import java.util.List;
 
+import org.springframework.hateoas.CollectionModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 
 import com.algaworks.algafood.api.exceptionhandler.Problem;
+import com.algaworks.algafood.api.model.RestauranteApenasNomeModel;
+import com.algaworks.algafood.api.model.RestauranteBasicoModel;
 import com.algaworks.algafood.api.model.RestauranteModel;
 import com.algaworks.algafood.api.model.input.RestauranteInput;
-import com.algaworks.algafood.api.model.view.RestauranteView;
 import com.algaworks.algafood.api.openapi.model.RestauranteBasicModelOpenApi;
 import com.algaworks.algafood.domain.model.Cidade;
-import com.fasterxml.jackson.annotation.JsonView;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -20,6 +21,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import springfox.documentation.annotations.ApiIgnore;
 
 @ApiResponses({ 
 	@ApiResponse(code = 400, message = "ID do restaurante inválido", response = Problem.class),
@@ -33,13 +35,16 @@ public interface RestauranteControllerOpenApi {
 
 	@ApiOperation(value = "Lista restaurantes", response = RestauranteBasicModelOpenApi.class)
 	@ApiImplicitParams({
-			@ApiImplicitParam(value = "Nome da projeção de pedidos", allowableValues = "apenas-nome", name = "projecao", paramType = "query", type = "string") 
+			@ApiImplicitParam(value = "Nome da projeção de pedidos", 
+					allowableValues = "apenas-nome", 
+					name = "projecao", paramType = "query", type = "string") 
 	})
-	@JsonView(RestauranteView.Resumo.class)
-	List<RestauranteModel> listar();
+	//@JsonView(RestauranteView.Resumo.class)
+	CollectionModel<RestauranteBasicoModel> listar();
 
+	@ApiIgnore
 	@ApiOperation(value = "Lista restaurantes", hidden = true)
-	List<RestauranteModel> listarApenasNomes();
+	CollectionModel<RestauranteApenasNomeModel> listarApenasNomes();
 
 	@ApiOperation("Busca um restaurante por ID")	
 	RestauranteModel buscar(
@@ -58,23 +63,23 @@ public interface RestauranteControllerOpenApi {
 	ResponseEntity<Cidade> remover(@ApiParam(value = "ID de um restaurante", example = "1", required = true) @PathVariable Long restauranteId);	
 	
 	@ApiOperation("Ativa um restaurante por ID")
-	void ativar(@ApiParam(value = "ID de um restaurante", example = "1", required = true) Long restauranteId);
+	ResponseEntity<Void> ativar(@ApiParam(value = "ID de um restaurante", example = "1", required = true) Long restauranteId);
 
 	@ApiOperation("Inativa um restaurante por ID")
-	void inativar(@ApiParam(value = "ID de um restaurante", example = "1", required = true) Long restauranteId);
+	ResponseEntity<Void> inativar(@ApiParam(value = "ID de um restaurante", example = "1", required = true) Long restauranteId);
 
 	@ApiOperation("Ativa múltiplos restaurantes")
-	void ativarMultiplos(
+	ResponseEntity<Void> ativarMultiplos(
 			@ApiParam(name = "corpo", value = "IDs de restaurantes", required = true) List<Long> restauranteIds);
 
 	@ApiOperation("Inativa múltiplos restaurantes")
-	void inativarMultiplos(
+	ResponseEntity<Void> inativarMultiplos(
 			@ApiParam(name = "corpo", value = "IDs de restaurantes", required = true) List<Long> restauranteIds);
 
 	@ApiOperation("Abre um restaurante por ID")
-	void abrir(@ApiParam(value = "ID de um restaurante", example = "1", required = true) Long restauranteId);
+	ResponseEntity<Void> abrir(@ApiParam(value = "ID de um restaurante", example = "1", required = true) Long restauranteId);
 
 	@ApiOperation("Fecha um restaurante por ID")
-	void fechar(@ApiParam(value = "ID de um restaurante", example = "1", required = true) Long restauranteId);
+	ResponseEntity<Void> fechar(@ApiParam(value = "ID de um restaurante", example = "1", required = true) Long restauranteId);
 
 }

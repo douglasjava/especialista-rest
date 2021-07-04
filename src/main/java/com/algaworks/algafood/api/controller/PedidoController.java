@@ -1,14 +1,14 @@
 package com.algaworks.algafood.api.controller;
 
-import java.util.List;
 import java.util.Map;
 
 import javax.validation.Valid;
 
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.data.web.PagedResourcesAssembler;
+import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,11 +21,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.algaworks.algafood.api.assembler.PedidoInputDisassembler;
 import com.algaworks.algafood.api.assembler.PedidoModelAssembler;
-import com.algaworks.algafood.api.assembler.PedidoResumoModalAssembler;
+import com.algaworks.algafood.api.assembler.PedidoResumoModelAssembler;
 import com.algaworks.algafood.api.model.PedidoModel;
 import com.algaworks.algafood.api.model.PedidoResumoModel;
 import com.algaworks.algafood.api.model.input.PedidoInput;
 import com.algaworks.algafood.api.openapi.controller.PedidoControllerOpenApi;
+import com.algaworks.algafood.core.data.PageAdapter;
 import com.algaworks.algafood.core.data.PageableTranslator;
 import com.algaworks.algafood.domain.exception.EntidadeNaoEncontradaException;
 import com.algaworks.algafood.domain.exception.NegocioException;
@@ -47,25 +48,24 @@ public class PedidoController implements PedidoControllerOpenApi {
     private PedidoRepository pedidoRepository;
     private EmissaoPedidoService emissaoPedidoService;
     private PedidoModelAssembler pedidoModelAssembler;
-    private PedidoResumoModalAssembler pedidoResumoModalAssembler;
+    private PedidoResumoModelAssembler pedidoResumoModalAssembler;
     private PedidoInputDisassembler pedidoInputDisassembler;
     private PedidoService pedidoService;
+    private PagedResourcesAssembler<Pedido> pagedResourcesAssembler;
 
 
     @Override
     @GetMapping
-    public Page<PedidoResumoModel> pesquisar(PedidoFilter pedidoFilter,
+    public PagedModel<PedidoResumoModel> pesquisar(PedidoFilter pedidoFilter,
                                              @PageableDefault(size = 10) Pageable pageable) {
 
-        pageable = traduzirPageable(pageable);
+    	Pageable pageableTraduzido = traduzirPageable(pageable);
 
-        Page<Pedido> pedidos = pedidoRepository.findAll(PedidoSpecs.usandoFiltro(pedidoFilter), pageable);
+        Page<Pedido> pedidos = pedidoRepository.findAll(PedidoSpecs.usandoFiltro(pedidoFilter), pageableTraduzido);
+        
+        pedidos = new PageAdapter<>(pedidos, pageable);
 
-        List<PedidoResumoModel> pedidoModel = pedidoResumoModalAssembler.toCollectionModel(pedidos.getContent());
-
-        Page<PedidoResumoModel> pedidoResumoModelPage = new PageImpl<>(pedidoModel, pageable, pedidos.getTotalElements());
-
-        return pedidoResumoModelPage;
+        return pagedResourcesAssembler.toModel(pedidos, pedidoResumoModalAssembler);
 
     }
 

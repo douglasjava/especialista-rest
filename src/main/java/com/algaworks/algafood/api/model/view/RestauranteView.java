@@ -1,7 +1,7 @@
 package com.algaworks.algafood.api.model.view;
 
 public interface RestauranteView {
-
+/**
     interface Resumo {
 
     }
@@ -9,5 +9,5 @@ public interface RestauranteView {
     interface ApenasNome {
 
     }
-
+**/
 }

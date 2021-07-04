@@ -6,6 +6,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
+import org.springframework.hateoas.CollectionModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -20,12 +21,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.algaworks.algafood.api.assembler.RestauranteApenasNomeModelAssembler;
+import com.algaworks.algafood.api.assembler.RestauranteBasicoModelAssembler;
 import com.algaworks.algafood.api.assembler.RestauranteInputDisassembler;
 import com.algaworks.algafood.api.assembler.RestauranteModelAssembler;
+import com.algaworks.algafood.api.model.RestauranteApenasNomeModel;
+import com.algaworks.algafood.api.model.RestauranteBasicoModel;
 import com.algaworks.algafood.api.model.RestauranteModel;
 import com.algaworks.algafood.api.model.input.CozinhaIdInput;
 import com.algaworks.algafood.api.model.input.RestauranteInput;
-import com.algaworks.algafood.api.model.view.RestauranteView;
 import com.algaworks.algafood.api.openapi.controller.RestauranteControllerOpenApi;
 import com.algaworks.algafood.domain.exception.CidadeNaoEncontradaException;
 import com.algaworks.algafood.domain.exception.CozinhaNaoEncontradaException;
@@ -37,7 +41,6 @@ import com.algaworks.algafood.domain.model.Cidade;
 import com.algaworks.algafood.domain.model.Restaurante;
 import com.algaworks.algafood.domain.repository.RestauranteRepository;
 import com.algaworks.algafood.domain.service.CadastroRestauranteService;
-import com.fasterxml.jackson.annotation.JsonView;
 
 import lombok.AllArgsConstructor;
 
@@ -52,7 +55,9 @@ public class RestauranteController implements RestauranteControllerOpenApi {
     private ValidateProgramatic validateProgramatic;
     private RestauranteModelAssembler restauranteModelAssembler;
     private RestauranteInputDisassembler restauranteInputDisassembler;
-
+    private RestauranteBasicoModelAssembler restauranteBasicoModelAssembler;
+    private RestauranteApenasNomeModelAssembler restauranteApenasNomeModelAssembler;       
+    
     /*
     @GetMapping
     public MappingJacksonValue listar(@RequestParam(required = false) String projecao) {
@@ -85,17 +90,17 @@ public class RestauranteController implements RestauranteControllerOpenApi {
     }
     */
     @Override
-    @JsonView(RestauranteView.ApenasNome.class)
+    //@JsonView(RestauranteView.ApenasNome.class)
     @GetMapping(params = "projecao=apenas-nome")
-    public List<RestauranteModel> listarApenasNomes() {
-        return listar();
+    public CollectionModel<RestauranteApenasNomeModel> listarApenasNomes() {
+        return restauranteApenasNomeModelAssembler.toCollectionModel(restauranteRepository.findAll());         
     }
     
     @Override
-    @JsonView(RestauranteView.Resumo.class)
+    //@JsonView(RestauranteView.Resumo.class)
     @GetMapping   
-    public List<RestauranteModel> listar() {
-    	return restauranteModelAssembler.toCollectionModel(restauranteRepository.findAll());         
+    public CollectionModel<RestauranteBasicoModel> listar() {
+		return restauranteBasicoModelAssembler.toCollectionModel(restauranteRepository.findAll());         
     }
 
     @Override
@@ -161,42 +166,53 @@ public class RestauranteController implements RestauranteControllerOpenApi {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public ResponseEntity<Cidade> remover(@PathVariable Long restauranteId) {
         cadastroRestaurante.excluir(restauranteId);
+        
         return ResponseEntity.noContent().build();
     }
 
     @Override
     @PutMapping("/{restauranteId}/ativo")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void ativar(@PathVariable Long restauranteId) {
+    public ResponseEntity<Void> ativar(@PathVariable Long restauranteId) {
         cadastroRestaurante.ativar(restauranteId);
+        
+        return ResponseEntity.noContent().build();
     }
 
     @Override
     @DeleteMapping("/{restauranteId}/ativo")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void inativar(@PathVariable Long restauranteId) {
+    public ResponseEntity<Void> inativar(@PathVariable Long restauranteId) {
         cadastroRestaurante.inativar(restauranteId);
+        
+        return ResponseEntity.noContent().build();
     }
     
     @Override
     @PutMapping("/{restauranteId}/abertura")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void abrir(@PathVariable Long restauranteId) {
+    public ResponseEntity<Void> abrir(@PathVariable Long restauranteId) {
         cadastroRestaurante.abrir(restauranteId);
+        
+        return ResponseEntity.noContent().build();
     }
 
     @PutMapping("/{restauranteId}/fechamento")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void fechar(@PathVariable Long restauranteId) {
+    public ResponseEntity<Void> fechar(@PathVariable Long restauranteId) {
         cadastroRestaurante.fechar(restauranteId);
+        
+        return ResponseEntity.noContent().build();
     }
 
     @Override
     @PutMapping("/ativacoes")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void ativarMultiplos(@RequestBody List<Long> restauranteIds) {
+    public ResponseEntity<Void> ativarMultiplos(@RequestBody List<Long> restauranteIds) {
         try {
             cadastroRestaurante.ativar(restauranteIds);
+            
+            return ResponseEntity.noContent().build();
         } catch (RestauranteNaoEncontradoException e) {
             throw new NegocioException(e.getMessage(), e);
         }
@@ -205,9 +221,11 @@ public class RestauranteController implements RestauranteControllerOpenApi {
     @Override
     @DeleteMapping("/ativacoes")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void inativarMultiplos(@RequestBody List<Long> restauranteIds) {
+    public ResponseEntity<Void> inativarMultiplos(@RequestBody List<Long> restauranteIds) {
         try {
             cadastroRestaurante.inativar(restauranteIds);
+            
+            return ResponseEntity.noContent().build();
         } catch (RestauranteNaoEncontradoException e) {
             throw new NegocioException(e.getMessage(), e);
         }

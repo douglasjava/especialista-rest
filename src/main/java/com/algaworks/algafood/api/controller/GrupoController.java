@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.validation.Valid;
 
+import org.springframework.hateoas.CollectionModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -39,10 +40,10 @@ public class GrupoController implements GrupoControllerOpenApi{
 
     @Override
     @GetMapping
-    public List<GrupoModel> listar() {
-        List<Grupo> grupos = grupoRepository.findAll();
-
-        return grupoModelAssembler.toCollectionModel(grupos);
+    public CollectionModel<GrupoModel> listar() {
+        List<Grupo> todosGrupos = grupoRepository.findAll();
+        
+        return grupoModelAssembler.toCollectionModel(todosGrupos);
     }
 
     @Override
@@ -50,7 +51,7 @@ public class GrupoController implements GrupoControllerOpenApi{
     public GrupoModel buscar(@PathVariable Long grupoId) {
         Grupo grupo = cadastroGrupoService.buscarOuFalhar(grupoId);
 
-        return grupoModelAssembler.toModal(grupo);
+        return grupoModelAssembler.toModel(grupo);
     }
 
     @Override
@@ -59,7 +60,7 @@ public class GrupoController implements GrupoControllerOpenApi{
     public GrupoModel adicionar(@RequestBody @Valid GrupoInput grupoInput) {
         Grupo grupo = grupoInputDisassembler.toDomainObject(grupoInput);
 
-        return grupoModelAssembler.toModal(cadastroGrupoService.salvar(grupo));
+        return grupoModelAssembler.toModel(cadastroGrupoService.salvar(grupo));
     }
 
     @Override
@@ -70,7 +71,7 @@ public class GrupoController implements GrupoControllerOpenApi{
 
         grupoInputDisassembler.copyToDomainObject(grupoInput, grupoAtual);
 
-        return grupoModelAssembler.toModal(cadastroGrupoService.salvar(grupoAtual));
+        return grupoModelAssembler.toModel(cadastroGrupoService.salvar(grupoAtual));
     }
 
     @Override

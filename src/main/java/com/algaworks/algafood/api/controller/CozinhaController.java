@@ -1,13 +1,12 @@
 package com.algaworks.algafood.api.controller;
 
-import java.util.List;
-
 import javax.validation.Valid;
 
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.data.web.PagedResourcesAssembler;
+import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -40,17 +39,22 @@ public class CozinhaController implements CozinhaControllerOpenApi {
 	private CadastroCozinhaService cadastroCozinha;
 	private CozinhaModelAssembler cozinhaModelAssembler;
 	private CozinhaInputDisassembler cozinhaInputDisassembler;
+	private PagedResourcesAssembler<Cozinha> pagedResourcesAssembler;
 
 	@Override
 	@GetMapping
-	public Page<CozinhaModel> listar(@PageableDefault(size = 10) Pageable pageable) {
+	public PagedModel<CozinhaModel> listar(@PageableDefault(size = 10) Pageable pageable) {
 		Page<Cozinha> cozinhasPage = cozinhaRepository.findAll(pageable);
 
-		List<CozinhaModel> cozinhaModel = cozinhaModelAssembler.toCollectionModel(cozinhasPage.getContent());
-
-		Page<CozinhaModel> cozinhaModelPage = new PageImpl<>(cozinhaModel, pageable, cozinhasPage.getTotalElements());
-
-		return cozinhaModelPage;
+		/**
+		 * Utilizando essa implementação, passamos o Page e o nosso assembler o mesmo já estende 
+		 * o RepresentationModelAssembler, e internamente ele vai converter a nossa paginação 
+		 * em um objeto PagedModel
+		 */
+		PagedModel<CozinhaModel> cozinhasPageModel = pagedResourcesAssembler
+				.toModel(cozinhasPage, cozinhaModelAssembler);
+		
+		return cozinhasPageModel;
 	}
 
 	@Override

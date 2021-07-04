@@ -5,6 +5,7 @@ import java.util.concurrent.TimeUnit;
 
 import javax.validation.Valid;
 
+import org.springframework.hateoas.CollectionModel;
 import org.springframework.http.CacheControl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -57,7 +58,7 @@ public class FormaPagamentoController  implements FormaPagamentoControllerOpenAp
 	 */
     @Override
     @GetMapping
-    public ResponseEntity<List<FormaPagamentoModel>> listar(ServletWebRequest request) {    	
+    public ResponseEntity<CollectionModel<FormaPagamentoModel>>  listar(ServletWebRequest request) {    	
     	ValidateDeepDto validate = formaPagamentoService.validateDeepEtags(request);
     	
     	if(validate.isCheckNotModified()) {
@@ -65,7 +66,7 @@ public class FormaPagamentoController  implements FormaPagamentoControllerOpenAp
     	}
     	
         List<FormaPagamento> todasFormasPagamentos = formaPagamentoRepository.findAll();
-        List<FormaPagamentoModel> formaPagamentoModel = formaPagamentoModelAssembler.toCollectionModel(todasFormasPagamentos);
+        CollectionModel<FormaPagamentoModel> formasPagamentosModel =  formaPagamentoModelAssembler.toCollectionModel(todasFormasPagamentos);
                 
         return ResponseEntity.ok()
         		//.cacheControl(CacheControl.maxAge(10, TimeUnit.SECONDS)) 
@@ -74,7 +75,7 @@ public class FormaPagamentoController  implements FormaPagamentoControllerOpenAp
         		//.cacheControl(CacheControl.noCache())
         		//.cacheControl(CacheControl.noStore())
         		.eTag(validate.getEtag())
-        		.body(formaPagamentoModel);
+        		.body(formasPagamentosModel);
     }
 
     @Override
