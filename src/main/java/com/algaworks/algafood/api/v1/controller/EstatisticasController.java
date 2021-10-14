@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.algaworks.algafood.api.v1.AlgaLinks;
 import com.algaworks.algafood.api.v1.openapi.controller.EstatisticasControllerOpenApi;
+import com.algaworks.algafood.core.security.CheckSecurity;
 import com.algaworks.algafood.domain.filter.VendaDiariaFilter;
 import com.algaworks.algafood.domain.model.dto.VendaDiaria;
 import com.algaworks.algafood.domain.service.VendaQueryService;
@@ -29,6 +30,7 @@ public class EstatisticasController implements EstatisticasControllerOpenApi {
     private VendaReportService vendaReportService;
     private AlgaLinks algaLinks;
     
+    @CheckSecurity.Estatisticas.PodeConsultar
     @Override
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public EstatisticasModel estatisticas() {
@@ -36,9 +38,10 @@ public class EstatisticasController implements EstatisticasControllerOpenApi {
         
         estatisticasModel.add(algaLinks.linkToEstatisticasVendasDiarias("vendas-diarias"));
         
-        return estatisticasModel;
+        return estatisticasModel;	
     } 
     
+    @CheckSecurity.Estatisticas.PodeConsultar
     @Override
     @GetMapping(path = "/vendas-diarias", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<VendaDiaria> consultarVendasDiarias(VendaDiariaFilter vendaDiariaFilter,
@@ -47,6 +50,7 @@ public class EstatisticasController implements EstatisticasControllerOpenApi {
     }
 
 
+    @CheckSecurity.Estatisticas.PodeConsultar
     @Override
     @GetMapping(path = "/vendas-diarias", produces = MediaType.APPLICATION_PDF_VALUE)
     public ResponseEntity<byte[]> consultarVendasDiariasPdf(VendaDiariaFilter vendaDiariaFilter,

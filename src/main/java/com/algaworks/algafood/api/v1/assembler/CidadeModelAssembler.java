@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 import com.algaworks.algafood.api.v1.AlgaLinks;
 import com.algaworks.algafood.api.v1.controller.CidadeController;
 import com.algaworks.algafood.api.v1.model.CidadeModel;
+import com.algaworks.algafood.core.security.AlgaSecurity;
 import com.algaworks.algafood.domain.model.Cidade;
 
 @Component
@@ -15,11 +16,13 @@ public class CidadeModelAssembler extends RepresentationModelAssemblerSupport<Ci
 
     private ModelMapper modelMapper;
     private AlgaLinks algaLinks;
+    private AlgaSecurity algaSecurity;  
 
-    public CidadeModelAssembler(ModelMapper modelMapper, AlgaLinks algaLinks) {
+    public CidadeModelAssembler(ModelMapper modelMapper, AlgaLinks algaLinks, AlgaSecurity algaSecurity) {
     	super(CidadeController.class, CidadeModel.class);
         this.modelMapper = modelMapper;
         this.algaLinks = algaLinks;
+        this.algaSecurity = algaSecurity;
     }
 
     @Override
@@ -30,15 +33,26 @@ public class CidadeModelAssembler extends RepresentationModelAssemblerSupport<Ci
     	//CidadeModel cidadeModel = modelMapper.map(cidade, CidadeModel.class);    	
     	//cidadeModel.add(linkTo(methodOn(CidadeController.class).buscar(cidadeModel.getId())).withSelfRel());
     	
-    	cidadeModel.add(algaLinks.linkToCidades("cidades"));        
-        cidadeModel.getEstado().add(algaLinks.linkToEstado(cidadeModel.getEstado().getId()));
+    	if (algaSecurity.podeConsultarCidades()) {
+    		cidadeModel.add(algaLinks.linkToCidades("cidades"));            		
+    	}
+    	
+    	if (algaSecurity.podeConsultarEstados()) {
+    		cidadeModel.getEstado().add(algaLinks.linkToEstado(cidadeModel.getEstado().getId()));    	    	
+    	}
     	
     	return cidadeModel;
     }
     
     @Override
     public CollectionModel<CidadeModel> toCollectionModel(Iterable<? extends Cidade> entities) {
-    	return super.toCollectionModel(entities).add(algaLinks.linkToCidades());
+        CollectionModel<CidadeModel> collectionModel = super.toCollectionModel(entities);
+        
+        if (algaSecurity.podeConsultarCidades()) {
+            collectionModel.add(algaLinks.linkToCidades());
+        }
+        
+        return collectionModel;
     }
 
     /*

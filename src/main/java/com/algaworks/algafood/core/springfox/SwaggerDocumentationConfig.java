@@ -51,6 +51,7 @@ import com.fasterxml.classmate.TypeResolver;
 
 import springfox.bean.validators.configuration.BeanValidatorPluginsConfiguration;
 import springfox.documentation.builders.ApiInfoBuilder;
+import springfox.documentation.builders.OAuthBuilder;
 import springfox.documentation.builders.ParameterBuilder;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
@@ -59,11 +60,19 @@ import springfox.documentation.schema.AlternateTypeRule;
 import springfox.documentation.schema.AlternateTypeRules;
 import springfox.documentation.schema.ModelRef;
 import springfox.documentation.service.ApiInfo;
+import springfox.documentation.service.AuthorizationScope;
 import springfox.documentation.service.Contact;
+import springfox.documentation.service.GrantType;
+import springfox.documentation.service.OAuth;
 import springfox.documentation.service.Parameter;
+import springfox.documentation.service.ResourceOwnerPasswordCredentialsGrant;
 import springfox.documentation.service.ResponseMessage;
+import springfox.documentation.service.SecurityReference;
+import springfox.documentation.service.SecurityReference.SecurityReferenceBuilder;
+import springfox.documentation.service.SecurityScheme;
 import springfox.documentation.service.Tag;
 import springfox.documentation.spi.DocumentationType;
+import springfox.documentation.spi.service.contexts.SecurityContext;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
@@ -125,8 +134,45 @@ public class SwaggerDocumentationConfig implements WebMvcConfigurer {
 					
 					.directModelSubstitute(Pageable.class, PageableModelOpenApi.class)
 					.directModelSubstitute(Links.class, LinksModelOpenApi.class)
+					
+					.securitySchemes(List.of(securityScheme())) //descreve qual foi a tecnica de segurança
+					.securityContexts(List.of(securityContext()))
+					
 					.apiInfo(apiInfoV1())
 					.tags(new Tag("Cidades", "Gerencia as cidades"), getTags());
+	}
+	
+	private SecurityScheme securityScheme() {
+		return new OAuthBuilder()
+					.name("AlgaFood")
+					.grantTypes(grantTypes())
+					.scopes(scopes())
+				.build();
+	}
+	
+	private SecurityContext securityContext() {
+		var securityReference = SecurityReference.builder()
+					.reference("AlgaFood")
+					.scopes(scopes().toArray(new AuthorizationScope[0]))
+				.build();
+		
+		var securityContext = SecurityContext.builder()
+				.securityReferences(List.of(securityReference))
+				.forPaths(PathSelectors.any())
+			.build();
+		
+		return securityContext;
+	}
+	
+	private List<AuthorizationScope> scopes() {
+		return List.of(
+					new AuthorizationScope("READ", "Acesso de leitura"),
+					new AuthorizationScope("WRITE", "Acesso de escrita")
+				);
+	}
+	
+	private List<GrantType> grantTypes() {
+		return List.of(new ResourceOwnerPasswordCredentialsGrant("/oauth/token"));
 	}
 
 	@Bean

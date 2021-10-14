@@ -62,6 +62,7 @@ validação feita no DTO.
 -- Modulo Segurança
 URL: authorization code grant
 http://localhost:8081/oauth/authorize?response_type=code&client_id=foodanalytics&state=abc&redirect_uri=http://www.algafood.local:8000
+
 Resposta: http://www.algafood.local:8000/?code=W0kei8&state=MC41NzQ1NTAzMzQ4MTY0MDc0
 
 
@@ -86,3 +87,20 @@ URL: implicit grant
 http://localhost:8081/oauth/authorize?response_type=token&client_id=webadmin&state=abc&redirect_uri=http://aplicacao-cliente
 resposta: 
 http://aplicacao-cliente/#access_token=a447ebb2-f360-47a2-bc95-85e63c14232f&token_type=bearer&state=abc&expires_in=43199&scope=read%20write
+
+
+
+##### Docker
+
+###Criar uma rede
+docker network ls -> para visualizar rede
+docker network create --driver bridge algafood-network
+
+###Criando container mysql passando a rede
+docker container run -d -p 3306:3306 -e MYSQL_ROOT_PASSWORD=12345 --network algafood-network --name algafood-mysql mysql:8.0
+
+###Gerando imagem da aplicação 
+docker image build -t algafood-api .
+
+###Criando container aplicação passando a rede
+docker container run --rm -p 8080:8080 -e DB_HOST=algafood-mysql --network algafood-network  algafood-api

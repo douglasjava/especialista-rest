@@ -25,12 +25,13 @@ public class WebConfig implements WebMvcConfigurer {
 	 *          requisições simples [GET/HEAD/POST]
 	 * @apiNote maxAge -> Defini o empo que as requisiçoes ficaram no cache o padrão
 	 *          é 1800s 30 minutos
-	 */
+	 
 	@Override
 	public void addCorsMappings(CorsRegistry registry) {
 		registry.addMapping("/**").allowedMethods("*");
 
 	}
+	*/
 
 	/**
 	 * Implementação para habilitar ETAG para gerar e validar automaticamente o hash

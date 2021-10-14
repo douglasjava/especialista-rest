@@ -26,6 +26,7 @@ import com.algaworks.algafood.api.v1.assembler.FormaPagamentoModelAssembler;
 import com.algaworks.algafood.api.v1.model.FormaPagamentoModel;
 import com.algaworks.algafood.api.v1.model.input.FormaPagamentoInput;
 import com.algaworks.algafood.api.v1.openapi.controller.FormaPagamentoControllerOpenApi;
+import com.algaworks.algafood.core.security.CheckSecurity;
 import com.algaworks.algafood.domain.model.FormaPagamento;
 import com.algaworks.algafood.domain.model.dto.ValidateDeepDto;
 import com.algaworks.algafood.domain.repository.FormaPagamentoRepository;
@@ -56,9 +57,10 @@ public class FormaPagamentoController  implements FormaPagamentoControllerOpenAp
 	 * 
 	 * @return
 	 */
+    @CheckSecurity.FormasPagamento.PodeConsultar
     @Override
     @GetMapping
-    public ResponseEntity<CollectionModel<FormaPagamentoModel>>  listar(ServletWebRequest request) {    	
+    public ResponseEntity<CollectionModel<FormaPagamentoModel>> listar(ServletWebRequest request) {    	
     	ValidateDeepDto validate = formaPagamentoService.validateDeepEtags(request);
     	
     	if(validate.isCheckNotModified()) {
@@ -78,6 +80,7 @@ public class FormaPagamentoController  implements FormaPagamentoControllerOpenAp
         		.body(formasPagamentosModel);
     }
 
+    @CheckSecurity.FormasPagamento.PodeConsultar
     @Override
     @GetMapping("/{formaPagamentoId}")
     public ResponseEntity<FormaPagamentoModel> buscar(@PathVariable Long formaPagamentoId, ServletWebRequest request) {
@@ -95,6 +98,7 @@ public class FormaPagamentoController  implements FormaPagamentoControllerOpenAp
         		.body(formaPagamentoModel);
     }
 
+    @CheckSecurity.FormasPagamento.PodeEditar
     @Override
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
@@ -106,6 +110,7 @@ public class FormaPagamentoController  implements FormaPagamentoControllerOpenAp
         return formaPagamentoModelAssembler.toModel(formaPagamento);
     }
 
+    @CheckSecurity.FormasPagamento.PodeEditar
     @Override
     @PutMapping("/{formaPagamentoId}")
     public FormaPagamentoModel atualizar(@PathVariable Long formaPagamentoId,
@@ -119,6 +124,7 @@ public class FormaPagamentoController  implements FormaPagamentoControllerOpenAp
         return formaPagamentoModelAssembler.toModel(formaPagamentoAtual);
     }
 
+    @CheckSecurity.FormasPagamento.PodeEditar
     @Override
     @DeleteMapping("/{formaPagamentoId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)

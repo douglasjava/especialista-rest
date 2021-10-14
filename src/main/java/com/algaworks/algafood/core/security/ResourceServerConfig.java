@@ -1,14 +1,19 @@
 package com.algaworks.algafood.core.security;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.stream.Collectors;
 
+import org.springframework.context.annotation.Bean;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
+import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
@@ -23,9 +28,14 @@ public class ResourceServerConfig extends WebSecurityConfigurerAdapter {
 				//.antMatchers(HttpMethod.GET, "/v1/cozinhas/**").authenticated()
 				//.anyRequest().denyAll()
 			//.and()
-    		.csrf().disable()
-    		.cors().and()
-    		.oauth2ResourceServer().jwt().jwtAuthenticationConverter(jwtAuthenticationConverter());
+    			.formLogin().loginPage("/login")
+    			.and()
+		    	.authorizeRequests()
+					.antMatchers("/oauth/**").authenticated()
+				.and()
+		    		.csrf().disable()
+		    		.cors().and()
+		    		.oauth2ResourceServer().jwt().jwtAuthenticationConverter(jwtAuthenticationConverter());
     		//.oauth2ResourceServer().opaqueToken();//habilitando o Resorce Serve no projeto para validar token opaco    		
     }
 
@@ -46,12 +56,24 @@ public class ResourceServerConfig extends WebSecurityConfigurerAdapter {
 				authorities = Collections.emptyList();
 			}
 			
-			return authorities.stream()
+			//Fluxo incluido para adicionar os scopes na requisição
+			var scopes = new JwtGrantedAuthoritiesConverter();
+			Collection<GrantedAuthority> grantedAuthorities = scopes.convert(jwt);
+						
+			grantedAuthorities.addAll(authorities.stream()
 					.map(SimpleGrantedAuthority::new)
-					.collect(Collectors.toList());
+					.collect(Collectors.toList()));
+			
+			return grantedAuthorities;
 		});
 		
 		return jwtAuthenticationConverter;
+	}
+	
+	@Bean
+	@Override
+	protected AuthenticationManager authenticationManager() throws Exception {
+		return super.authenticationManager();
 	}
     
 }

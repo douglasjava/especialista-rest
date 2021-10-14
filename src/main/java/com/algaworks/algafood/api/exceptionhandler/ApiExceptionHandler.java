@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.tomcat.util.http.fileupload.FileUploadBase;
 import org.springframework.beans.TypeMismatchException;
@@ -16,6 +15,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
@@ -37,6 +37,8 @@ import com.algaworks.algafood.domain.exception.ValidacaoException;
 import com.fasterxml.jackson.databind.JsonMappingException.Reference;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.fasterxml.jackson.databind.exc.PropertyBindingException;
+
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @ControllerAdvice
@@ -245,6 +247,21 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
 				.type(problemType.getUri())
 				.title(problemType.getTitle())
 				.detail(detail);
+	}
+	
+	@ExceptionHandler(AccessDeniedException.class)
+	public ResponseEntity<?> handleEntidadeNaoEncontrada(AccessDeniedException ex, WebRequest request) {
+
+	    HttpStatus status = HttpStatus.FORBIDDEN;
+	    ProblemType problemType = ProblemType.ACESSO_NEGADO;
+	    String detail = ex.getMessage();
+
+	    Problem problem = createProblemBuilder(status, problemType, detail)
+		            .userMessage(detail)
+		            .userMessage("Você não possui permissão para executar essa operação.")
+	            .build();
+
+	    return handleExceptionInternal(ex, problem, new HttpHeaders(), status, request);
 	}
 	
 	private ResponseEntity<Object> handleInvalidFormatException(InvalidFormatException ex, HttpHeaders headers,

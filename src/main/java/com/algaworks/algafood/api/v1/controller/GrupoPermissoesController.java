@@ -16,6 +16,8 @@ import com.algaworks.algafood.api.v1.AlgaLinks;
 import com.algaworks.algafood.api.v1.assembler.PermissaoModelAssembler;
 import com.algaworks.algafood.api.v1.model.PermissaoModel;
 import com.algaworks.algafood.api.v1.openapi.controller.GrupoPermissaoControllerOpenApi;
+import com.algaworks.algafood.core.security.AlgaSecurity;
+import com.algaworks.algafood.core.security.CheckSecurity;
 import com.algaworks.algafood.domain.model.Grupo;
 import com.algaworks.algafood.domain.service.CadastroGrupoService;
 
@@ -29,7 +31,9 @@ public class GrupoPermissoesController implements GrupoPermissaoControllerOpenAp
 	private CadastroGrupoService cadastroGrupoService;
 	private PermissaoModelAssembler permissaoModelAssembler;
 	private AlgaLinks algaLinks;
+	private AlgaSecurity algaSecurity;   
 
+	@CheckSecurity.UsuariosGruposPermissoes.PodeConsultar
 	@Override
 	@GetMapping
 	public CollectionModel<PermissaoModel> listar(@PathVariable Long grupoId) {
@@ -37,18 +41,23 @@ public class GrupoPermissoesController implements GrupoPermissaoControllerOpenAp
 	    
 	    CollectionModel<PermissaoModel> permissoesModel 
 	        = permissaoModelAssembler.toCollectionModel(grupo.getPermissoes())
-	            .removeLinks()
-	            .add(algaLinks.linkToGrupoPermissoes(grupoId))
-	            .add(algaLinks.linkToGrupoPermissaoAssociacao(grupoId, "associar"));
+	            .removeLinks();
 	    
-	    permissoesModel.getContent().forEach(permissaoModel -> {
-	        permissaoModel.add(algaLinks.linkToGrupoPermissaoDesassociacao(
-	                grupoId, permissaoModel.getId(), "desassociar"));
-	    });
+	    permissoesModel.add(algaLinks.linkToGrupoPermissoes(grupoId));
+	    
+	    if(algaSecurity.podeEditarUsuariosGruposPermissoes()) {
+	    	permissoesModel.add(algaLinks.linkToGrupoPermissaoAssociacao(grupoId, "associar"));
+	    	
+		    permissoesModel.getContent().forEach(permissaoModel -> {
+		        permissaoModel.add(algaLinks.linkToGrupoPermissaoDesassociacao(
+		                grupoId, permissaoModel.getId(), "desassociar"));
+		    });
+	    }
 	    
 	    return permissoesModel;
 	}  
 
+	@CheckSecurity.UsuariosGruposPermissoes.PodeEditar
 	@Override
 	@DeleteMapping("/{permissaoId}")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
@@ -58,6 +67,7 @@ public class GrupoPermissoesController implements GrupoPermissaoControllerOpenAp
 	    return ResponseEntity.noContent().build();
 	}
 
+	@CheckSecurity.UsuariosGruposPermissoes.PodeEditar
 	@Override
 	@PutMapping("/{permissaoId}")
 	@ResponseStatus(HttpStatus.NO_CONTENT)

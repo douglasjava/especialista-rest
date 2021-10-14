@@ -2,6 +2,7 @@ package com.algaworks.algafood.domain.service;
 
 import java.util.Optional;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,16 +13,18 @@ import com.algaworks.algafood.domain.model.Grupo;
 import com.algaworks.algafood.domain.model.Usuario;
 import com.algaworks.algafood.domain.repository.UsuarioRepository;
 
-import lombok.AllArgsConstructor;
-
 @Service
-@AllArgsConstructor
 public class CadastroUsuarioService {
-
-    private UsuarioRepository usuarioRepository;
-    private CadastroGrupoService cadastroGrupo;
+	
+	@Autowired
+	private UsuarioRepository usuarioRepository;
+	
+	@Autowired
+	private CadastroGrupoService cadastroGrupo;
+	
+	@Autowired
 	private PasswordEncoder passwordEncoder;
-
+	
 
     @Transactional
     public Usuario salvar(Usuario usuario) {

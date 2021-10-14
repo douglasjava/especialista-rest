@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.algaworks.algafood.api.v1.openapi.controller.FluxoPedidoControllerOpenApi;
+import com.algaworks.algafood.core.security.CheckSecurity;
 import com.algaworks.algafood.domain.service.FluxoPedidoService;
 
 import lombok.AllArgsConstructor;
@@ -21,6 +22,7 @@ public class FluxoPedidoController implements FluxoPedidoControllerOpenApi {
 
 	private FluxoPedidoService fluxoPedidoService;
 
+	@CheckSecurity.Pedidos.PodeGerenciarPedidos
 	@Override
 	@PutMapping("/cancelamento")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
@@ -30,6 +32,7 @@ public class FluxoPedidoController implements FluxoPedidoControllerOpenApi {
 		return ResponseEntity.noContent().build();
 	}
 
+	@CheckSecurity.Pedidos.PodeGerenciarPedidos
 	@Override
 	@PutMapping("/confirmacao")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
@@ -40,6 +43,7 @@ public class FluxoPedidoController implements FluxoPedidoControllerOpenApi {
 				
 	}
 
+	@CheckSecurity.Pedidos.PodeGerenciarPedidos
 	@Override
 	@PutMapping("/entrega")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
