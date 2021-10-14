@@ -12,6 +12,7 @@ public enum ProblemType {
 	RECURSO_NAO_ENCONTRADO("/recurso-nao-encontrado", "Recurso não encontrado"),
 	ENTIDADE_EM_USO("/entidade-em-uso", "Entidade em uso"),
 	MAX_FILE_SIZE_EXCEEDED("/tamanho-nao-suportado", "Tamanho do arquivo"),
+	ACESSO_NEGADO("/acesso-negado", "Acesso negado"),
 	ERRO_NEGOCIO("/erro-negocio", "Violação de regra de negócio");
 
 	private String title;

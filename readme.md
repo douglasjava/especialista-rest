@@ -50,3 +50,57 @@ validação feita no DTO.
 - Existe um pré validador, implementado pela especificação do CORS que verifica uma requisição simples, fazendo uma busca simples com o OPTIONS
 - a propriedade @CrossOrigin(maxAge = 10) informa o tempo que essa veriifcação deve ficar no cache, nesse exemplo a cada 10s o cache é limpo e se surgir uma requisição não simples
 - essa requisição com OPTIONS será feita.
+
+
+- Ferramenta para disponibilizar logs na nuvem 
+- https://douglasdias.loggly.com/search?swicus_org_id=121050693503598592#terms=Started%20AlgafoodApiApplication&from=2021-08-21T18:46:29.348Z&until=2021-08-21T18:56:29.348Z&source_group=
+
+
+
+
+
+-- Modulo Segurança
+URL: authorization code grant
+http://localhost:8081/oauth/authorize?response_type=code&client_id=foodanalytics&state=abc&redirect_uri=http://www.algafood.local:8000
+
+Resposta: http://www.algafood.local:8000/?code=W0kei8&state=MC41NzQ1NTAzMzQ4MTY0MDc0
+
+
+Fluxo authorization code com PKCE no minimo 43 até 128 caracteres
+
+no fluxo do plain o code_Verifier é o mesmo do  code_challenge
+code_Verifier: teste123
+code_challenge: teste123
+
+http://localhost:8081/oauth/authorize?response_type=code&client_id=foodanalytics&redirect_uri=http://www.algafood.local:8000&code_challenge=teste123&code_challenge_method=plain
+
+no fluxo do s256 o code_challenge é o code_Verifier codigo em sha-256 e codificado em base64url
+code_Verifier: teste123
+code_challenge: KJFg2w2fOfmuF1TE7JwW-QtQ4y4JxftUga5kKz09GjY
+
+a senha secret foi removida para não ser enviada  (Segurança)
+
+http://localhost:8081/oauth/authorize?response_type=code&client_id=foodanalytics&redirect_uri=http://www.algafood.local:8000&code_challenge=KJFg2w2fOfmuF1TE7JwW-QtQ4y4JxftUga5kKz09GjY&code_challenge_method=s256
+
+
+URL: implicit grant
+http://localhost:8081/oauth/authorize?response_type=token&client_id=webadmin&state=abc&redirect_uri=http://aplicacao-cliente
+resposta: 
+http://aplicacao-cliente/#access_token=a447ebb2-f360-47a2-bc95-85e63c14232f&token_type=bearer&state=abc&expires_in=43199&scope=read%20write
+
+
+
+##### Docker
+
+###Criar uma rede
+docker network ls -> para visualizar rede
+docker network create --driver bridge algafood-network
+
+###Criando container mysql passando a rede
+docker container run -d -p 3306:3306 -e MYSQL_ROOT_PASSWORD=12345 --network algafood-network --name algafood-mysql mysql:8.0
+
+###Gerando imagem da aplicação 
+docker image build -t algafood-api .
+
+###Criando container aplicação passando a rede
+docker container run --rm -p 8080:8080 -e DB_HOST=algafood-mysql --network algafood-network  algafood-api
