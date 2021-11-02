@@ -61,7 +61,7 @@ validação feita no DTO.
 
 -- Modulo Segurança
 URL: authorization code grant
-http://localhost:8081/oauth/authorize?response_type=code&client_id=foodanalytics&state=abc&redirect_uri=http://www.algafood.local:8000
+http://localhost:8080/oauth/authorize?response_type=code&client_id=foodanalytics&state=abc&redirect_uri=http://www.algafood.local:8000
 
 Resposta: http://www.algafood.local:8000/?code=W0kei8&state=MC41NzQ1NTAzMzQ4MTY0MDc0
 
@@ -72,7 +72,7 @@ no fluxo do plain o code_Verifier é o mesmo do  code_challenge
 code_Verifier: teste123
 code_challenge: teste123
 
-http://localhost:8081/oauth/authorize?response_type=code&client_id=foodanalytics&redirect_uri=http://www.algafood.local:8000&code_challenge=teste123&code_challenge_method=plain
+http://localhost:8080/oauth/authorize?response_type=code&client_id=foodanalytics&redirect_uri=http://www.algafood.local:8000&code_challenge=teste123&code_challenge_method=plain
 
 no fluxo do s256 o code_challenge é o code_Verifier codigo em sha-256 e codificado em base64url
 code_Verifier: teste123
@@ -92,15 +92,40 @@ http://aplicacao-cliente/#access_token=a447ebb2-f360-47a2-bc95-85e63c14232f&toke
 
 ##### Docker
 
-###Criar uma rede
+##Criar uma rede
 docker network ls -> para visualizar rede
 docker network create --driver bridge algafood-network
 
-###Criando container mysql passando a rede
+##Criando container mysql passando a rede
 docker container run -d -p 3306:3306 -e MYSQL_ROOT_PASSWORD=12345 --network algafood-network --name algafood-mysql mysql:8.0
 
-###Gerando imagem da aplicação 
+##Gerando imagem da aplicação 
 docker image build -t algafood-api .
 
-###Criando container aplicação passando a rede
-docker container run --rm -p 8080:8080 -e DB_HOST=algafood-mysql --network algafood-network  algafood-api
+##Criando container aplicação passando a rede
+docker container run --rm -p 8080:8080 -e DB_HOST=algafood-mysql --network algafood-network  douglasjava26/algafood-api
+
+
+## Criar container linux para executar comando curl
+docker container run --rm -it --network algafood-api_algafood-network alpine sh
+nslookup algafood-api -> para saber os IPs que a aplicação ta rodando
+
+
+##Replicas service docker
+docker-compose up --scale algafood-api=2
+
+##Executar dentro do docker
+curl http://algafood-api:8080/hostcheck
+
+
+
+## Criar container redis 
+docker container run --rm -it --network algafood-api_algafood-network redis:6.2.1-alpine sh
+
+redis-cli -h algafood-redis -p 6379
+
+
+#### Conectando ao redis lab
+docker container run --rm -it redis:6.0.10-alpine redis-cli -h redis-13016.c8.us-east-1-2.ec2.cloud.redislabs.com -p 13016
+
+auth PznaxUIJaGdytbcfNYA0oeZ6YcXa9RmR
