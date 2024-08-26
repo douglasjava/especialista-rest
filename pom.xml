@@ -20,7 +20,7 @@
 	<properties>
 		<java.version>11</java.version>
 		<modelmapper.version>2.4.4</modelmapper.version>
-		<springfox-version>2.9.2</springfox-version>
+		<springfox-version>2.10.0</springfox-version>
 		<jasperreports.version>6.10.0</jasperreports.version>
 		<aws-java-sdk-s3.version>1.11.671</aws-java-sdk-s3.version>
 		<logback-ext-loggly.version>0.1.5</logback-ext-loggly.version>
